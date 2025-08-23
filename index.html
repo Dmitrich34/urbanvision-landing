@@ -2,12 +2,29 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <!-- делаем относительный путь, чтобы работало на GitHub Pages -->
+    <link rel="icon" type="image/x-icon" href="./favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>UrbanVision - Ваш бренд в центре внимания города</title>
+
+    <!-- каноническая ссылка (красивая, без ?v=...) -->
+    <link rel="canonical" href="https://dmitrich34.github.io/urbanvision-landing/" />
+
+    <!-- убираем параметр ?v=... из адресной строки после загрузки страницы -->
+    <script>
+      (function () {
+        if (!location.search) return;
+        var url = new URL(location.href);
+        if (url.searchParams.has('v')) {
+          url.searchParams.delete('v');
+          history.replaceState(null, '', url.pathname + url.hash);
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
+    <!-- это для dev-режима; на проде Vite подставит собранные скрипты сам -->
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
