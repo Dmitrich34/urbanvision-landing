@@ -9,13 +9,12 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
 export default defineConfig(({ mode }) => {
-  const isSingle = mode === 'single' // спец. режим «одним файлом»
+  const isSingle = mode === 'single'        // спец. режим «одним файлом»
+  const isDev = mode === 'development'      // локальный dev-сервер
 
   return {
-    // Для GitHub Pages этого проекта путь всегда фиксированный:
-    // https://dmitrich34.github.io/urbanvision-landing/
-    // поэтому base должен быть ровно '/urbanvision-landing/'.
-    base: isSingle ? './' : '/urbanvision-landing/',
+    // dev → '/', Pages → '/urbanvision-landing/', single → './'
+    base: isSingle ? './' : (isDev ? '/' : '/urbanvision-landing/'),
 
     plugins: [
       react(),
