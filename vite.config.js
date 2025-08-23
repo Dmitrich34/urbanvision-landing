@@ -9,28 +9,29 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
 export default defineConfig(({ mode }) => {
-  const isSingle = mode === 'single' // запускаем с --mode single для «одного файла»
+  const isSingle = mode === 'single' // спец. режим «одним файлом»
 
   return {
-    base: isSingle ? './' : '/',      // 👈 добавили относительную базу для single
+    // Для GitHub Pages этого проекта путь всегда фиксированный:
+    // https://dmitrich34.github.io/urbanvision-landing/
+    // поэтому base должен быть ровно '/urbanvision-landing/'.
+    base: isSingle ? './' : '/urbanvision-landing/',
+
     plugins: [
       react(),
       tailwindcss(),
-      ...(isSingle ? [viteSingleFile()] : []), // подключаем только в режиме single
+      ...(isSingle ? [viteSingleFile()] : []),
     ],
+
     resolve: {
-      alias: {
-        '@': resolve(__dirname, './src'),
-      },
+      alias: { '@': resolve(__dirname, './src') },
     },
+
     build: {
       target: 'es2018',
-      // Для single: всё встраиваем в HTML; для обычной — дефолты Vite
       cssCodeSplit: isSingle ? false : true,
       assetsInlineLimit: isSingle ? 100_000_000 : 4096,
-      rollupOptions: isSingle
-        ? { output: { inlineDynamicImports: true } }
-        : {},
+      rollupOptions: isSingle ? { output: { inlineDynamicImports: true } } : {},
     },
   }
 })
