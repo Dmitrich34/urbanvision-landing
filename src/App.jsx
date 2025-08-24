@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import MobileMenu from './components/ui/MobileMenu';
 import './App.css';
 import { Button } from './components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './components/ui/card';
@@ -55,6 +56,8 @@ function App() {
               <p className="text-cyan-300 text-sm">Ваш бренд в центре внимания города</p>
             </div>
           </div>
+
+          {/* Десктоп-меню */}
           <div className="hidden md:flex items-center space-x-6">
             <a href="#services" className="text-white hover:text-cyan-300 transition-colors">Услуги</a>
             <a href="#about" className="text-white hover:text-cyan-300 transition-colors">О нас</a>
@@ -63,6 +66,11 @@ function App() {
             <Button variant="cta" onClick={handleCallClick}>
               Заказать звонок
             </Button>
+          </div>
+
+          {/* Мобильное меню (бургер) */}
+          <div className="md:hidden">
+            <MobileMenu onCallClick={handleCallClick} />
           </div>
         </div>
       </header>
@@ -99,8 +107,6 @@ function App() {
                   <Play className="mr-2 h-5 w-5" />
                   Узнать, как увеличить продажи
                 </Button>
-
-                {/* ❌ Удалено: в Hero больше нет второй кнопки «Заказать звонок» */}
               </div>
 
               <div className="grid grid-cols-3 gap-6 pt-8">
@@ -266,7 +272,7 @@ function App() {
                   Профессиональная разработка контента
                 </li>
                 <li className="flex items-center text-gray-300">
-                  <CheckCircle className="h-5 в-5 text-green-400 mr-3" />
+                  <CheckCircle className="h-5 w-5 text-green-400 mr-3" />
                   Адаптация под различные форматы экранов
                 </li>
                 <li className="flex items-center text-gray-300">
@@ -325,7 +331,7 @@ function App() {
             </div>
 
             <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-то-r from-cyan-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-6">
+              <div className="w-16 h-16 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-6">
                 <span className="text-2xl font-bold text-white">4</span>
               </div>
               <h3 className="text-xl font-bold text-white mb-3">Отчетность</h3>
@@ -347,7 +353,7 @@ function App() {
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-12">
+        <div className="grid lg:grid-cols-2 gap-12">
             <Card className="bg-white/5 border-white/10 backdrop-blur-sm">
               <CardHeader>
                 <CardTitle className="text-white text-2xl">Оставить заявку</CardTitle>
@@ -455,7 +461,7 @@ function App() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-black/40 backdrop-blur-sm border-т border-white/10 py-12">
+      <footer className="bg-black/40 backdrop-blur-sm border-t border-white/10 py-12">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-3 gap-8">
             <div>
