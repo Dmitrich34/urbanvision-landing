@@ -44,9 +44,9 @@ function App() {
             <a href="#services" className="text-white hover:text-cyan-300 transition-colors">Услуги</a>
             <a href="#about" className="text-white hover:text-cyan-300 transition-colors">О нас</a>
             <a href="#contact" className="text-white hover:text-cyan-300 transition-colors">Контакты</a>
-            {/* ⬇️ Правка: по клику плавно скроллим к #contact */}
+            {/* CTA: получить консультацию → единый стиль и скролл к контактам */}
             <Button
-              className="bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600"
+              variant="cta"
               onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
             >
               Получить консультацию
@@ -77,18 +77,22 @@ function App() {
               </div>
               
               <div className="flex flex-col sm:flex-row gap-4">
+                {/* CTA: Узнать, как увеличить продажи */}
                 <Button 
-                  size="lg" 
-                  className="bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-lg px-8 py-6"
+                  size="lg"
+                  variant="cta"
+                  className="text-lg px-8 py-6"
                   onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}
                 >
                   <Play className="mr-2 h-5 w-5" />
                   Узнать, как увеличить продажи
                 </Button>
+
+                {/* CTA: Заказать звонок — приводим к единому стилю CTA */}
                 <Button 
-                  size="lg" 
-                  variant="outline" 
-                  className="border-white/30 text-white hover:bg-white/10 text-lg px-8 py-6"
+                  size="lg"
+                  variant="cta"
+                  className="text-lg px-8 py-6"
                   onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}
                 >
                   <Phone className="mr-2 h-5 w-5" />
@@ -366,7 +370,8 @@ function App() {
                   className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
                   rows={4}
                 />
-                <Button className="w-full bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600">
+                {/* CTA: Отправить заявку */}
+                <Button variant="cta" className="w-full">
                   Отправить заявку
                 </Button>
                 <p className="text-xs text-gray-400 text-center">
