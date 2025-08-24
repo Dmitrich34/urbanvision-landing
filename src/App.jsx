@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { TEL_LINK, MAILTO_LINK, TELEGRAM_URL, PHONE, EMAIL, TELEGRAM_HANDLE } from './config/contacts'
 import MobileMenu from './components/ui/MobileMenu';
 import './App.css';
 import { Button } from './components/ui/button';
@@ -38,7 +39,7 @@ function App() {
   // логика кнопки «Заказать звонок»: мобила -> tel:, десктоп -> модалка
   const handleCallClick = () => {
     if (/Mobi|Android/i.test(navigator.userAgent)) {
-      window.location.href = "tel:+7XXXXXXXXXX"; // ← подставь реальный номер
+      window.location.href = TEL_LINK;
       return;
     }
     setCallDialogOpen(true);
@@ -130,7 +131,7 @@ function App() {
               <img 
                 src={videoStand} 
                 alt="Видеостойка UrbanVision" 
-                className="relative z-10 w-full h-auto rounded-3xl shadow-2xl"
+                className="relative z-10 w-full h-auto rounded-3xl shadow-2xl"                
               />
             </div>
           </div>
@@ -138,7 +139,7 @@ function App() {
       </section>
 
       {/* About Section */}
-      <section id="about" className="py-20 bg-black/20 backdrop-blur-sm">
+      <section id="about" className="py-20 bg-black/20 backdrop-blur-sm scroll-mt-24 md:scroll-mt-28">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-white mb-4">Почему UrbanVision?</h2>
@@ -208,7 +209,7 @@ function App() {
       </section>
 
       {/* Services Section */}
-      <section id="services" className="py-20">
+      <section id="services" className="py-20 scroll-mt-24 md:scroll-mt-28">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-white mb-4">Наши решения для вашего бизнеса</h2>
@@ -247,7 +248,7 @@ function App() {
               <img 
                 src={lobbySignage} 
                 alt="Реклама в бизнес-центре" 
-                className="w-full h-auto rounded-2xl shadow-2xl"
+                className="w-full h-auto rounded-2xl shadow-2xl"                
               />
             </div>
           </div>
@@ -344,7 +345,7 @@ function App() {
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-20">
+      <section id="contact" className="py-20 scroll-mt-24 md:scroll-mt-28">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-white mb-4">Начните продвижение уже сегодня</h2>
@@ -398,7 +399,10 @@ function App() {
                     </div>
                     <div>
                       <p className="text-white font-semibold">Telegram</p>
-                      <p className="text-gray-300">@urbanvision_tg</p>
+                      <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer"
+                          className="text-gray-300 hover:text-white transition-colors">
+                        @{TELEGRAM_HANDLE}
+                      </a>
                     </div>
                   </div>
 
@@ -408,7 +412,9 @@ function App() {
                     </div>
                     <div>
                       <p className="text-white font-semibold">Телефон</p>
-                      <p className="text-gray-300">+7 (XXX) XXX-XX-XX</p>
+                      <a href={TEL_LINK} className="text-gray-300 hover:text-white transition-colors">
+                        {PHONE}
+                      </a>
                     </div>
                   </div>
 
@@ -418,7 +424,9 @@ function App() {
                     </div>
                     <div>
                       <p className="text-white font-semibold">Email</p>
-                      <p className="text-gray-300">info@urban-vision.ru</p>
+                      <a href={MAILTO_LINK} className="text-gray-300 hover:text-white transition-colors">
+                        {EMAIL}
+                      </a>
                     </div>
                   </div>
 
@@ -476,6 +484,7 @@ function App() {
                 Эффективная indoor-реклама на видеостойках в самых проходимых местах города.
               </p>
             </div>
+          
 
             <div>
               <h4 className="text-white font-semibold mb-4">Услуги</h4>
@@ -490,20 +499,50 @@ function App() {
             <div>
               <h4 className="text-white font-semibold mb-4">Контакты</h4>
               <div className="space-y-2 text-gray-300 text-sm">
-                <p>Telegram: @urbanvision_tg</p>
-                <p>Телефон: +7 (XXX) XXX-XX-XX</p>
-                <p>Email: info@urban-vision.ru</p>
-                <p>Сайт: urban-vision.ru</p>
+                <p>
+                  Telegram:{" "}
+                  <a
+                    href={TELEGRAM_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-white transition-colors"
+                  >
+                    @{TELEGRAM_HANDLE}
+                  </a>
+                </p>
+                <p>
+                  Телефон:{" "}
+                  <a href={TEL_LINK} className="hover:text-white transition-colors">
+                    {PHONE}
+                  </a>
+                </p>
+                <p>
+                  Email:{" "}
+                  <a href={MAILTO_LINK} className="hover:text-white transition-colors">
+                    {EMAIL}
+                  </a>
+                </p>
+                <p>
+                  Сайт:{" "}
+                  <a
+                    href="https://urban-vision.ru"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-white transition-colors"
+                  >
+                    urban-vision.ru
+                  </a>
+                </p>
               </div>
             </div>
-          </div>
+          </div> {/* ← закрываем grid */}
 
           <div className="border-t border-white/10 mt-8 pt-8 text-center">
             <p className="text-gray-400 text-sm">
               © 2025 UrbanVision. Все права защищены.
             </p>
           </div>
-        </div>
+        </div> {/* ← закрываем container */}
       </footer>
 
       {/* 🪟 Модалка «Заказать звонок» */}

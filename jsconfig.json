@@ -1,8 +1,12 @@
 {
   "compilerOptions": {
-    "baseUrl": "./",
-    "paths": {
-      "@/*": ["src/*"]
-    }
-  }
+    "baseUrl": ".",
+    "paths": { "@/*": ["src/*"] },
+    "jsx": "react-jsx",
+    "module": "esnext",
+    "target": "es2020",
+    "types": ["vite/client"]        // подхватывает типы Vite Env
+  },
+  "include": ["src", "vite.config.js"],
+  "exclude": ["node_modules", "dist"]
 }
