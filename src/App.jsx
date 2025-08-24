@@ -44,7 +44,11 @@ function App() {
             <a href="#services" className="text-white hover:text-cyan-300 transition-colors">Услуги</a>
             <a href="#about" className="text-white hover:text-cyan-300 transition-colors">О нас</a>
             <a href="#contact" className="text-white hover:text-cyan-300 transition-colors">Контакты</a>
-            <Button className="bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600">
+            {/* ⬇️ Правка: по клику плавно скроллим к #contact */}
+            <Button
+              className="bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600"
+              onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+            >
               Получить консультацию
             </Button>
           </div>
@@ -76,7 +80,7 @@ function App() {
                 <Button 
                   size="lg" 
                   className="bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-lg px-8 py-6"
-                  onClick={() => document.getElementById("contact").scrollIntoView({ behavior: "smooth" })}
+                  onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}
                 >
                   <Play className="mr-2 h-5 w-5" />
                   Узнать, как увеличить продажи
@@ -85,7 +89,7 @@ function App() {
                   size="lg" 
                   variant="outline" 
                   className="border-white/30 text-white hover:bg-white/10 text-lg px-8 py-6"
-                  onClick={() => document.getElementById("contact").scrollIntoView({ behavior: "smooth" })}
+                  onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}
                 >
                   <Phone className="mr-2 h-5 w-5" />
                   Заказать звонок
