@@ -1,57 +1,69 @@
 import React, { useEffect, useState } from "react"
-import { Button } from "@/components/ui/button"
+import { Button } from "./button"
 import { Menu, X, Phone } from "lucide-react"
 
 export default function MobileMenu({ onCallClick }) {
   const [open, setOpen] = useState(false)
 
-  // блокируем прокрутку фона, когда меню открыто
+  // Блокируем прокрутку фона при открытом меню
   useEffect(() => {
-    if (open) {
-      document.body.style.overflow = "hidden"
-    } else {
-      document.body.style.overflow = ""
-    }
-    return () => (document.body.style.overflow = "")
+    const { body } = document
+    if (open) body.style.overflow = "hidden"
+    else body.style.overflow = ""
+    return () => (body.style.overflow = "")
   }, [open])
 
   const close = () => setOpen(false)
 
+  const NavLink = ({ href, children }) => (
+    <a
+      href={href}
+      className="block rounded-lg px-3 py-3 text-base hover:bg-white/10"
+      onClick={close}
+    >
+      {children}
+    </a>
+  )
+
   return (
     <>
-      {/* Кнопка-бургер — видна ТОЛЬКО на мобилке */}
+      {/* Бургер в кружке с градиентом */}
       <Button
         variant="ghost"
-        className="md:hidden text-white hover:bg-white/10"
+        className="md:hidden p-2 rounded-full bg-gradient-to-r from-cyan-500 to-purple-500 text-white shadow-lg hover:opacity-90"
         aria-label="Открыть меню"
         aria-controls="mobile-menu"
         aria-expanded={open}
         onClick={() => setOpen(true)}
       >
-        <Menu className="w-6 h-6" />
+        <Menu className="w-7 h-7" />
       </Button>
 
-      {/* Оверлей + панель */}
       {open && (
         <>
-          {/* Полупрозрачный фон */}
+          {/* Оверлей */}
           <div
             className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
             onClick={close}
           />
-          {/* Панель справа */}
+
+          {/* Панель справа с градиентной подложкой */}
           <aside
             id="mobile-menu"
-            className="fixed right-0 top-0 z-50 h-full w-[84vw] max-w-xs bg-slate-900 text-white border-l border-white/10 shadow-2xl
-                       animate-in slide-in-from-right duration-200"
+            className="fixed right-0 top-0 z-[60] h-full w-[84vw] max-w-xs
+                       bg-gradient-to-b from-slate-900 via-blue-900 to-purple-900
+                       text-white border-l border-white/10 shadow-2xl
+                       animate-in slide-in-from-right duration-200 rounded-l-2xl
+                       flex flex-col"
             role="dialog"
             aria-modal="true"
           >
+            {/* Хедер панели */}
             <div className="flex items-center justify-between px-4 h-14 border-b border-white/10">
               <div className="text-sm opacity-70">Меню</div>
               <Button
                 variant="ghost"
-                className="text-white hover:bg-white/10"
+                className="text-white hover:bg-white/10 rounded-full p-2"
                 aria-label="Закрыть меню"
                 onClick={close}
               >
@@ -59,40 +71,17 @@ export default function MobileMenu({ onCallClick }) {
               </Button>
             </div>
 
-            <nav className="px-4 py-6">
-              <ul className="space-y-4 text-base">
-                <li>
-                  <a
-                    href="#about"
-                    className="block rounded-lg px-3 py-2 hover:bg-white/10"
-                    onClick={close}
-                  >
-                    О нас
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#services"
-                    className="block rounded-lg px-3 py-2 hover:bg-white/10"
-                    onClick={close}
-                  >
-                    Услуги
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#contact"
-                    className="block rounded-lg px-3 py-2 hover:bg-white/10"
-                    onClick={close}
-                  >
-                    Контакты
-                  </a>
-                </li>
+            {/* Навигация */}
+            <nav className="px-4 py-6 grow overflow-y-auto">
+              <ul className="space-y-1">
+                <li><NavLink href="#about">О нас</NavLink></li>
+                <li><NavLink href="#services">Услуги</NavLink></li>
+                <li><NavLink href="#contact">Контакты</NavLink></li>
               </ul>
 
-              {/* блок с телефоном (по желанию — подставь номер) */}
-              <div className="mt-6 rounded-xl border border-white/10 p-4">
-                <div className="text-xs uppercase tracking-wide opacity-60 mb-1">
+              {/* Блок с телефоном (по желанию — подставь реальный номер) */}
+              <div className="mt-6 rounded-xl border border-white/10 p-4 bg-white/5">
+                <div className="text-xs uppercase tracking-wide opacity-70 mb-1">
                   Отдел продаж
                 </div>
                 <a href="tel:+7XXXXXXXXXX" className="text-lg font-medium">
@@ -100,10 +89,10 @@ export default function MobileMenu({ onCallClick }) {
                 </a>
               </div>
 
-              {/* CTA — тот же variant="cta" */}
+              {/* CTA */}
               <Button
                 variant="cta"
-                className="mt-6 w-full"
+                className="mt-6 w-full shadow-lg shadow-cyan-500/30 hover:shadow-purple-500/40"
                 onClick={() => {
                   close()
                   onCallClick?.()
@@ -113,6 +102,11 @@ export default function MobileMenu({ onCallClick }) {
                 Заказать звонок
               </Button>
             </nav>
+
+            {/* Нижняя приписка (опционально) */}
+            <div className="px-4 py-3 text-xs text-white/60 border-t border-white/10">
+              © 2025 UrbanVision
+            </div>
           </aside>
         </>
       )}
