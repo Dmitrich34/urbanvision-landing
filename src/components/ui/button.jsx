@@ -20,6 +20,10 @@ const buttonVariants = cva(
         ghost:
           "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
         link: "text-primary underline-offset-4 hover:underline",
+        // ✅ Новый вариант — единый стиль для CTA-кнопок
+        cta: "bg-gradient-to-r from-cyan-500 to-purple-500 text-white " +
+             "hover:from-cyan-600 hover:to-purple-600 " +
+             "shadow-lg shadow-purple-500/25"
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",
