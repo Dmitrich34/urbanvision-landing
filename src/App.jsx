@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.css';
 import { Button } from './components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './components/ui/card';
@@ -27,7 +27,22 @@ import lobbySignage from './assets/lobby-signage.jpg';
 import mallSignage from './assets/mall-signage.jpg';
 import videoStand from './assets/video-stand.jpeg';
 
+// ✅ модалка «Заказать звонок»
+import { CallRequestDialog } from './components/CallRequestDialog';
+
 function App() {
+  // состояние модалки звонка
+  const [callDialogOpen, setCallDialogOpen] = useState(false);
+
+  // логика кнопки «Заказать звонок»: мобила -> tel:, десктоп -> модалка
+  const handleCallClick = () => {
+    if (/Mobi|Android/i.test(navigator.userAgent)) {
+      window.location.href = "tel:+7XXXXXXXXXX"; // ← подставь реальный номер
+      return;
+    }
+    setCallDialogOpen(true);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900">
       {/* Header */}
@@ -44,12 +59,9 @@ function App() {
             <a href="#services" className="text-white hover:text-cyan-300 transition-colors">Услуги</a>
             <a href="#about" className="text-white hover:text-cyan-300 transition-colors">О нас</a>
             <a href="#contact" className="text-white hover:text-cyan-300 transition-colors">Контакты</a>
-            {/* CTA: получить консультацию → единый стиль и скролл к контактам */}
-            <Button
-              variant="cta"
-              onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-            >
-              Получить консультацию
+            {/* 🔁 Было «Получить консультацию» → Стало «Заказать звонок» с единой логикой */}
+            <Button variant="cta" onClick={handleCallClick}>
+              Заказать звонок
             </Button>
           </div>
         </div>
@@ -77,7 +89,7 @@ function App() {
               </div>
               
               <div className="flex flex-col sm:flex-row gap-4">
-                {/* CTA: Узнать, как увеличить продажи */}
+                {/* Оставляем ОДНУ основную CTA в Hero */}
                 <Button 
                   size="lg"
                   variant="cta"
@@ -88,16 +100,7 @@ function App() {
                   Узнать, как увеличить продажи
                 </Button>
 
-                {/* CTA: Заказать звонок — приводим к единому стилю CTA */}
-                <Button 
-                  size="lg"
-                  variant="cta"
-                  className="text-lg px-8 py-6"
-                  onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}
-                >
-                  <Phone className="mr-2 h-5 w-5" />
-                  Заказать звонок
-                </Button>
+                {/* ❌ Удалено: в Hero больше нет второй кнопки «Заказать звонок» */}
               </div>
 
               <div className="grid grid-cols-3 gap-6 pt-8">
@@ -263,7 +266,7 @@ function App() {
                   Профессиональная разработка контента
                 </li>
                 <li className="flex items-center text-gray-300">
-                  <CheckCircle className="h-5 w-5 text-green-400 mr-3" />
+                  <CheckCircle className="h-5 в-5 text-green-400 mr-3" />
                   Адаптация под различные форматы экранов
                 </li>
                 <li className="flex items-center text-gray-300">
@@ -322,7 +325,7 @@ function App() {
             </div>
 
             <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-6">
+              <div className="w-16 h-16 bg-gradient-то-r from-cyan-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-6">
                 <span className="text-2xl font-bold text-white">4</span>
               </div>
               <h3 className="text-xl font-bold text-white mb-3">Отчетность</h3>
@@ -370,7 +373,6 @@ function App() {
                   className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
                   rows={4}
                 />
-                {/* CTA: Отправить заявку */}
                 <Button variant="cta" className="w-full">
                   Отправить заявку
                 </Button>
@@ -453,7 +455,7 @@ function App() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-black/40 backdrop-blur-sm border-t border-white/10 py-12">
+      <footer className="bg-black/40 backdrop-blur-sm border-т border-white/10 py-12">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-3 gap-8">
             <div>
@@ -497,6 +499,9 @@ function App() {
           </div>
         </div>
       </footer>
+
+      {/* 🪟 Модалка «Заказать звонок» */}
+      <CallRequestDialog open={callDialogOpen} onOpenChange={setCallDialogOpen} />
     </div>
   );
 }
