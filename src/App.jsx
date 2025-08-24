@@ -28,7 +28,7 @@ import mallSignage from './assets/mall-signage.jpg';
 import videoStand from './assets/video-stand.jpeg';
 
 // ✅ модалка «Заказать звонок»
-import { CallRequestDialog } from './components/CallRequestDialog';
+import { CallRequestDialog } from './components/ui/CallRequestDialog';
 
 function App() {
   // состояние модалки звонка
