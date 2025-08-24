@@ -1,16 +1,22 @@
 import React, { useEffect, useState } from "react"
+import { createPortal } from "react-dom"
 import { Button } from "./button"
 import { Menu, X, Phone } from "lucide-react"
 
 export default function MobileMenu({ onCallClick }) {
   const [open, setOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  // SSR/гидратация: портал только после монтирования
+  useEffect(() => setMounted(true), [])
 
   // Блокируем прокрутку фона при открытом меню
   useEffect(() => {
+    if (!open) return
     const { body } = document
-    if (open) body.style.overflow = "hidden"
-    else body.style.overflow = ""
-    return () => (body.style.overflow = "")
+    const prev = body.style.overflow
+    body.style.overflow = "hidden"
+    return () => { body.style.overflow = prev }
   }, [open])
 
   const close = () => setOpen(false)
@@ -39,18 +45,19 @@ export default function MobileMenu({ onCallClick }) {
         <Menu className="w-7 h-7" />
       </Button>
 
-      {open && (
+      {/* Портал: оверлей и панель рендерим в <body>, чтобы не обрезались шапкой */}
+      {mounted && open && createPortal(
         <>
           {/* Оверлей */}
           <div
-            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm"
             onClick={close}
           />
 
-          {/* Панель справа с градиентной подложкой */}
+          {/* Панель справа с градиентной подложкой на всю высоту */}
           <aside
             id="mobile-menu"
-            className="fixed right-0 top-0 z-[60] h-full w-[84vw] max-w-xs
+            className="fixed right-0 top-0 z-[110] h-dvh w-[84vw] max-w-xs
                        bg-gradient-to-b from-slate-900 via-blue-900 to-purple-900
                        text-white border-l border-white/10 shadow-2xl
                        animate-in slide-in-from-right duration-200 rounded-l-2xl
@@ -79,7 +86,7 @@ export default function MobileMenu({ onCallClick }) {
                 <li><NavLink href="#contact">Контакты</NavLink></li>
               </ul>
 
-              {/* Блок с телефоном (по желанию — подставь реальный номер) */}
+              {/* Блок с телефоном (подставь номер) */}
               <div className="mt-6 rounded-xl border border-white/10 p-4 bg-white/5">
                 <div className="text-xs uppercase tracking-wide opacity-70 mb-1">
                   Отдел продаж
@@ -93,22 +100,19 @@ export default function MobileMenu({ onCallClick }) {
               <Button
                 variant="cta"
                 className="mt-6 w-full shadow-lg shadow-cyan-500/30 hover:shadow-purple-500/40"
-                onClick={() => {
-                  close()
-                  onCallClick?.()
-                }}
+                onClick={() => { close(); onCallClick?.() }}
               >
                 <Phone className="w-5 h-5 mr-2" />
                 Заказать звонок
               </Button>
             </nav>
 
-            {/* Нижняя приписка (опционально) */}
             <div className="px-4 py-3 text-xs text-white/60 border-t border-white/10">
               © 2025 UrbanVision
             </div>
           </aside>
-        </>
+        </>,
+        document.body
       )}
     </>
   )
