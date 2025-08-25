@@ -65,7 +65,7 @@ function App() {
             <a href="#contact" className="text-white hover:text-cyan-300 transition-colors">Контакты</a>
             {/* CTA: скроллим к форме */}
             <Button variant="cta" onClick={handleOrderClick}>
-              Заказать рекламу
+              ЗАКАЗАТЬ РЕКЛАМУ
             </Button>
           </div>
 
@@ -110,7 +110,8 @@ function App() {
                 </Button>
               </div>
 
-              <div className="grid grid-cols-3 gap-6 pt-8">
+              {/* За неимением достаточной аналитики данные пока скрыты */}
+              {/* <div className="grid grid-cols-3 gap-6 pt-8">
                 <div className="text-center">
                   <div className="text-3xl font-bold text-cyan-400">65+</div>
                   <div className="text-gray-300 text-sm">Городов</div>
@@ -123,7 +124,7 @@ function App() {
                   <div className="text-3xl font-bold text-cyan-400">49.5M</div>
                   <div className="text-gray-300 text-sm">Показов в месяц</div>
                 </div>
-              </div>
+              </div> */} 
             </div>
             
             <div className="relative">
@@ -337,7 +338,7 @@ function App() {
               </div>
               <h3 className="text-xl font-bold text-white mb-3">Отчетность</h3>
               <p className="text-gray-300">
-                Получаете полный фото-отчет и аналитику
+                Получаете полный фото-отчет
               </p>
             </div>
           </div>
