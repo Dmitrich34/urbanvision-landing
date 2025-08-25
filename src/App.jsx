@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { TEL_LINK, MAILTO_LINK, TELEGRAM_URL, PHONE, EMAIL, TELEGRAM_HANDLE } from './config/contacts'
 import MobileMenu from './components/ui/MobileMenu';
 import './App.css';
+import { scrollToId } from "@/lib/utils";
 import { Button } from './components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './components/ui/card';
 import { Input } from './components/ui/input';
@@ -29,14 +30,11 @@ import lobbySignage from './assets/lobby-signage.jpg';
 import mallSignage from './assets/mall-signage.jpg';
 import videoStand from './assets/video-stand.jpeg';
 
-// ✅ модалка «Заказать звонок»
-import { CallRequestDialog } from './components/ui/CallRequestDialog';
-
+// ✅ модалка «Заказать рекламу»
 function App() {
+  const handleOrderClick = () => scrollToId("order-form", 80);
   // состояние модалки звонка
-  const [callDialogOpen, setCallDialogOpen] = useState(false);
-
-  // логика кнопки «Заказать звонок»: мобила -> tel:, десктоп -> модалка
+  // логика кнопки «Заказать рекламу»: мобила -> tel:, десктоп -> модалка
   const handleCallClick = () => {
     if (/Mobi|Android/i.test(navigator.userAgent)) {
       window.location.href = TEL_LINK;
@@ -63,15 +61,15 @@ function App() {
             <a href="#services" className="text-white hover:text-cyan-300 transition-colors">Услуги</a>
             <a href="#about" className="text-white hover:text-cyan-300 transition-colors">О нас</a>
             <a href="#contact" className="text-white hover:text-cyan-300 transition-colors">Контакты</a>
-            {/* 🔁 Было «Получить консультацию» → Стало «Заказать звонок» с единой логикой */}
-            <Button variant="cta" onClick={handleCallClick}>
-              Заказать звонок
+            {/* 🔁 Было «Получить консультацию» → Стало «Заказать рекламу» с единой логикой */}
+            <Button variant="cta" onClick={handleOrderClick}>
+              Заказать рекламу
             </Button>
           </div>
 
           {/* Мобильное меню (бургер) */}
           <div className="md:hidden">
-            <MobileMenu onCallClick={handleCallClick} />
+            <MobileMenu />
           </div>
         </div>
       </header>
@@ -103,7 +101,7 @@ function App() {
                   size="lg"
                   variant="cta"
                   className="text-lg px-8 py-6"
-                  onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}
+                  onClick={() => scrollToId("order-form", 80)}
                 >
                   <Play className="mr-2 h-5 w-5" />
                   Узнать, как увеличить продажи
@@ -346,6 +344,7 @@ function App() {
 
       {/* Contact Section */}
       <section id="contact" className="py-20 scroll-mt-24 md:scroll-mt-28">
+          <div id="order-form" className="sr-only" />
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-white mb-4">Начните продвижение уже сегодня</h2>
@@ -357,7 +356,7 @@ function App() {
         <div className="grid lg:grid-cols-2 gap-12">
             <Card className="bg-white/5 border-white/10 backdrop-blur-sm">
               <CardHeader>
-                <CardTitle className="text-white text-2xl">Оставить заявку</CardTitle>
+                <CardTitle className="text-white text-2xl">Заказать рекламу</CardTitle>
                 <CardDescription className="text-gray-300">
                   Заполните форму, и мы свяжемся с вами в течение часа
                 </CardDescription>
@@ -545,9 +544,7 @@ function App() {
         </div> {/* ← закрываем container */}
       </footer>
 
-      {/* 🪟 Модалка «Заказать звонок» */}
-      <CallRequestDialog open={callDialogOpen} onOpenChange={setCallDialogOpen} />
-    </div>
+      </div>
   );
 }
 

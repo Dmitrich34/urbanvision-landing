@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react"
 import { createPortal } from "react-dom"
 import { Button } from "./button"
 import { Menu, X, Phone } from "lucide-react"
+import { scrollToId } from "@/lib/utils" // ← добавлено
 
 export default function MobileMenu({ onCallClick }) {
   const [open, setOpen] = useState(false)
@@ -100,10 +101,17 @@ export default function MobileMenu({ onCallClick }) {
               <Button
                 variant="cta"
                 className="mt-6 w-full shadow-lg shadow-cyan-500/30 hover:shadow-purple-500/40"
-                onClick={() => { close(); onCallClick?.() }}
+                onClick={(e) => {
+                  e.preventDefault()
+                  // Сначала закрываем меню...
+                  close()
+                  // ...затем плавно скроллим к форме «Заказать рекламу»
+                  // (onCallClick больше не используется умышленно, чтобы не вызывать tel:/модалку)
+                  setTimeout(() => scrollToId("order-form", 80), 0)
+                }}
               >
                 <Phone className="w-5 h-5 mr-2" />
-                Заказать звонок
+                Заказать рекламу
               </Button>
             </nav>
 
