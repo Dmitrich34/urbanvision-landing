@@ -28,7 +28,7 @@ import { FaTelegramPlane } from 'react-icons/fa';
 import urbanvisionLogo from './assets/urbanvision-logo.webp';
 import lobbySignage from './assets/lobby-signage.jpg';
 import mallSignage from './assets/mall-signage.jpg';
-import videoStand from './assets/video-stand.jpeg';
+import videoStand from './assets/video-stand01.jpg';
 
 // ✅ модалка «Заказать рекламу»
 function App() {
