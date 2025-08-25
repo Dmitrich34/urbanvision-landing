@@ -26,7 +26,7 @@ import {
 } from 'lucide-react';
 import { FaTelegramPlane } from 'react-icons/fa';
 import urbanvisionLogo from './assets/urbanvision-logo.webp';
-import lobbySignage from './assets/lobby-signage.jpg';
+import lobbySignage from './assets/lobby-signage01.jpg';
 import mallSignage from './assets/mall-signage01.jpg';
 import videoStand from './assets/video-stand01.jpg';
 
