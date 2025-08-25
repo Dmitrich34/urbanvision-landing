@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { createPortal } from "react-dom"
 import { Button } from "./button"
-import { Menu, X, Phone } from "lucide-react"
+import { Menu, X } from "lucide-react"
 import { scrollToId } from "@/lib/utils" // ← добавлено
 
 export default function MobileMenu({ onCallClick }) {
@@ -22,15 +22,27 @@ export default function MobileMenu({ onCallClick }) {
 
   const close = () => setOpen(false)
 
-  const NavLink = ({ href, children }) => (
-    <a
-      href={href}
-      className="block rounded-lg px-3 py-3 text-base hover:bg-white/10"
-      onClick={close}
-    >
-      {children}
-    </a>
-  )
+  const NavLink = ({ href, children }) => {
+    const handleClick = (e) => {
+      if (href && href.startsWith("#")) {
+        e.preventDefault()
+        close()
+        const id = href.slice(1)              // ← фикс: берём id из href
+        setTimeout(() => scrollToId(id, 96), 0) // учёт фикс-шапки на мобиле
+      } else {
+        close()
+      }
+    }  
+    return (
+      <a
+        href={href}
+        className="block rounded-lg px-3 py-3 text-base hover:bg-white/10"
+        onClick={handleClick}
+      >        
+        {children}
+      </a>
+    )
+  }
 
   return (
     <>
@@ -84,7 +96,7 @@ export default function MobileMenu({ onCallClick }) {
               <ul className="space-y-1">
                 <li><NavLink href="#about">О нас</NavLink></li>
                 <li><NavLink href="#services">Услуги</NavLink></li>
-                <li><NavLink href="#contact">Контакты</NavLink></li>
+                <li><NavLink href="#contact-info">Контакты</NavLink></li>
               </ul>
 
               {/* Блок с телефоном (подставь номер) */}
@@ -93,7 +105,7 @@ export default function MobileMenu({ onCallClick }) {
                   Отдел продаж
                 </div>
                 <a href="tel:+7XXXXXXXXXX" className="text-lg font-medium">
-                  +7 XXX XXX‑XX‑XX
+                  +7 XXX XXX-XX-XX
                 </a>
               </div>
 
@@ -103,15 +115,11 @@ export default function MobileMenu({ onCallClick }) {
                 className="mt-6 w-full shadow-lg shadow-cyan-500/30 hover:shadow-purple-500/40"
                 onClick={(e) => {
                   e.preventDefault()
-                  // Сначала закрываем меню...
                   close()
-                  // ...затем плавно скроллим к форме «Заказать рекламу»
-                  // (onCallClick больше не используется умышленно, чтобы не вызывать tel:/модалку)
                   setTimeout(() => scrollToId("order-form", 80), 0)
                 }}
               >
-                <Phone className="w-5 h-5 mr-2" />
-                Заказать рекламу
+                ЗАКАЗАТЬ РЕКЛАМУ
               </Button>
             </nav>
 

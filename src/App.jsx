@@ -32,7 +32,9 @@ import videoStand from './assets/video-stand.jpeg';
 
 // ✅ модалка «Заказать рекламу»
 function App() {
-  const handleOrderClick = () => scrollToId("order-form", 80);
+  // ↑ комментарий оставлен без изменений
+  const handleOrderClick = () => scrollToId("order-form", 96); // точный скролл на мобиле
+
   // состояние модалки звонка
   // логика кнопки «Заказать рекламу»: мобила -> tel:, десктоп -> модалка
   const handleCallClick = () => {
@@ -52,7 +54,7 @@ function App() {
             <img src={urbanvisionLogo} alt="UrbanVision" className="w-20 h-20 rounded-lg" />
             <div>
               <h1 className="text-2xl font-bold text-white">UrbanVision</h1>
-              <p className="text-cyan-300 text-sm">Ваш бренд в центре внимания города</p>
+              <p className="text-cyan-300 text-sm">Ваш бизнес в центре внимания</p>
             </div>
           </div>
 
@@ -61,7 +63,7 @@ function App() {
             <a href="#services" className="text-white hover:text-cyan-300 transition-colors">Услуги</a>
             <a href="#about" className="text-white hover:text-cyan-300 transition-colors">О нас</a>
             <a href="#contact" className="text-white hover:text-cyan-300 transition-colors">Контакты</a>
-            {/* 🔁 Было «Получить консультацию» → Стало «Заказать рекламу» с единой логикой */}
+            {/* CTA: скроллим к форме */}
             <Button variant="cta" onClick={handleOrderClick}>
               Заказать рекламу
             </Button>
@@ -101,7 +103,7 @@ function App() {
                   size="lg"
                   variant="cta"
                   className="text-lg px-8 py-6"
-                  onClick={() => scrollToId("order-form", 80)}
+                  onClick={() => scrollToId("order-form", 96)}
                 >
                   <Play className="mr-2 h-5 w-5" />
                   Узнать, как увеличить продажи
@@ -142,7 +144,7 @@ function App() {
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-white mb-4">Почему UrbanVision?</h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Мы – команда экспертов в области indoor-рекламы, которая помогает бизнесам любого масштаба достигать своих целей
+              Мы – команда экспертов в области indoor-рекламы, которая помогает бизнесу любого масштаба достигать своих целей
             </p>
           </div>
 
@@ -198,7 +200,7 @@ function App() {
               </CardHeader>
               <CardContent>
                 <p className="text-gray-300 text-center">
-                  Подробная аналитика и фото-отчеты по каждому размещению
+                  Фото-отчеты по каждому размещению
                 </p>
               </CardContent>
             </Card>
@@ -220,8 +222,8 @@ function App() {
             <div className="space-y-6">
               <h3 className="text-3xl font-bold text-white">Размещение на видеостойках</h3>
               <p className="text-gray-300 text-lg leading-relaxed">
-                Мы предлагаем размещение вашей рекламы на современных видеостойках в торговых и бизнес-центрах, 
-                жилых комплексах, фитнес-клубах и других местах с высокой проходимостью. Ваше сообщение будет видно 24/7.
+                Мы предлагаем размещение рекламы на современных видеостойках в местах с большим трафиком Вашей целевой аудитории. 
+                Информация о Вашем бизнесе будет доступнее для потенциальных клиентов.
               </p>
               <ul className="space-y-3">
                 <li className="flex items-center text-gray-300">
@@ -344,7 +346,8 @@ function App() {
 
       {/* Contact Section */}
       <section id="contact" className="py-20 scroll-mt-24 md:scroll-mt-28">
-          <div id="order-form" className="sr-only" />
+        {/* оставляем вспомогательный якорь для CTA (если где-то ещё используется) */}
+        <div id="order-form" className="sr-only" />
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-white mb-4">Начните продвижение уже сегодня</h2>
@@ -353,12 +356,12 @@ function App() {
             </p>
           </div>
 
-        <div className="grid lg:grid-cols-2 gap-12">
+          <div className="grid lg:grid-cols-2 gap-12">
             <Card className="bg-white/5 border-white/10 backdrop-blur-sm">
               <CardHeader>
                 <CardTitle className="text-white text-2xl">Заказать рекламу</CardTitle>
                 <CardDescription className="text-gray-300">
-                  Заполните форму, и мы свяжемся с вами в течение часа
+                  Заполните форму, и мы свяжемся с вами в течение 24 часов
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -390,7 +393,12 @@ function App() {
 
             <div className="space-y-8">
               <div>
-                <h3 className="text-2xl font-bold text-white mb-6">Контактная информация</h3>
+                <h3
+                  id="contact-info"
+                  className="text-2xl font-bold text-white mb-6 scroll-mt-24 md:scroll-mt-28"
+                >
+                  Контактная информация
+                </h3>
                 <div className="space-y-4">
                   <div className="flex items-center space-x-4">
                     <div className="w-12 h-12 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full flex items-center justify-center">
@@ -399,7 +407,7 @@ function App() {
                     <div>
                       <p className="text-white font-semibold">Telegram</p>
                       <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer"
-                          className="text-gray-300 hover:text-white transition-colors">
+                        className="text-gray-300 hover:text-white transition-colors">
                         @{TELEGRAM_HANDLE}
                       </a>
                     </div>
@@ -476,7 +484,7 @@ function App() {
                 <img src={urbanvisionLogo} alt="UrbanVision" className="w-18 h-18 rounded-lg" />
                 <div>
                   <h3 className="text-xl font-bold text-white">UrbanVision</h3>
-                  <p className="text-cyan-300 text-sm">Ваш бренд в центре внимания города</p>
+                  <p className="text-cyan-300 text-sm">Ваш бизнес в центре внимания</p>
                 </div>
               </div>
               <p className="text-gray-300 text-sm">
@@ -484,7 +492,6 @@ function App() {
               </p>
             </div>
           
-
             <div>
               <h4 className="text-white font-semibold mb-4">Услуги</h4>
               <ul className="space-y-2 text-gray-300 text-sm">
@@ -534,17 +541,17 @@ function App() {
                 </p>
               </div>
             </div>
-          </div> {/* ← закрываем grid */}
+          </div>
 
           <div className="border-t border-white/10 mt-8 pt-8 text-center">
             <p className="text-gray-400 text-sm">
               © 2025 UrbanVision. Все права защищены.
             </p>
           </div>
-        </div> {/* ← закрываем container */}
+        </div>
       </footer>
 
-      </div>
+    </div>
   );
 }
 
