@@ -1,34 +1,44 @@
-import React, { useState } from 'react';
-import { TEL_LINK, MAILTO_LINK, TELEGRAM_URL, PHONE, EMAIL, TELEGRAM_HANDLE } from './config/contacts'
-import MobileMenu from './components/ui/MobileMenu';
-import './App.css';
-import { scrollToId } from "@/lib/utils";
-import { Button } from './components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './components/ui/card';
-import { Input } from './components/ui/input';
-import { Textarea } from './components/ui/textarea';
-import { Badge } from './components/ui/badge';
-import { 
-  Eye, 
-  Target, 
-  Clock, 
-  MapPin, 
-  Users, 
-  TrendingUp, 
-  CheckCircle, 
-  Phone, 
-  Mail, 
+import React, { useState } from "react";
+
+// Конфиги
+import { TEL_LINK, MAILTO_LINK, TELEGRAM_URL, PHONE, EMAIL, TELEGRAM_HANDLE } from "./config/contacts";
+
+// UI и утилиты
+import { cn, scrollToId } from "@/lib/utils";
+import { Button } from "./components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./components/ui/card";
+import { Input } from "./components/ui/input";
+import { Textarea } from "./components/ui/textarea";
+import { Badge } from "./components/ui/badge";
+import MobileMenu from "./components/ui/MobileMenu";
+
+// Иконки
+import {
+  Eye,
+  Target,
+  Clock,
+  MapPin,
+  Users,
+  TrendingUp,
+  CheckCircle,
+  Phone,
+  Mail,
   MessageCircle,
   Play,
   BarChart3,
   Zap,
-  Send
-} from 'lucide-react';
-import { FaTelegramPlane } from 'react-icons/fa';
-import urbanvisionLogo from './assets/urbanvision-logo.webp';
-import lobbySignage from './assets/lobby-signage01.jpg';
-import mallSignage from './assets/mall-signage01.jpg';
-import videoStand from './assets/video-stand01.jpg';
+  Send,
+} from "lucide-react";
+import { FaTelegramPlane } from "react-icons/fa";
+
+// Ассеты
+import urbanvisionLogo from "./assets/urbanvision-logo.webp";
+import lobbySignage from "./assets/lobby-signage01.jpg";
+import mallSignage from "./assets/mall-signage01.jpg";
+import videoStand from "./assets/video-stand01.jpg";
+
+// Стили
+import "./App.css";
 
 // ✅ модалка «Заказать рекламу»
 function App() {
@@ -44,8 +54,218 @@ function App() {
     }
     setCallDialogOpen(true);
   };
+  
+// ==== BEGIN: ORDER FORM BLOCK (state/logic) ====
 
-  return (
+// чтобы не было ошибки при вызове setCallDialogOpen(true)
+const [callDialogOpen, setCallDialogOpen] = useState(false);
+
+// фиксированный префикс телефона
+const PHONE_PREFIX = "+7";
+
+// начальное состояние формы (удобно для сброса)
+const initialForm = {
+  name: "",
+  phone: PHONE_PREFIX + " ", // показываем только +7; остальное форматируется по вводу
+  email: "",
+  company: "",
+  hasVideo: "no",
+  city: "",
+  comment: "",
+  consent: false,
+};
+
+// форма «Заказать рекламу»
+const [ofForm, setOfForm] = useState(initialForm);
+const [ofErrors, setOfErrors] = useState({});
+const [ofSubmitting, setOfSubmitting] = useState(false);
+const [ofSubmitted, setOfSubmitted] = useState(false);
+
+const ofCities = ["Волгоград", "Волжский", "Другой"];
+
+// URL политики (положи файл как /public/privacy.pdf или укажи свой путь)
+const PRIVACY_URL = "/privacy.pdf";
+
+// ── Телефон: парсинг/формат/валидация ─────────────────────────────────────────
+const extractPhoneDigits = (s) =>
+  (s || "").replace(/\D/g, "").replace(/^7/, "").slice(0, 10);
+
+// +7 (123) 456-78-90 — формат по мере ввода (без подчёркиваний)
+const formatPhonePartial = (digits) => {
+  let out = PHONE_PREFIX;
+  if (digits.length > 0) {
+    out += " (" + digits.slice(0, 3);
+    if (digits.length >= 3) out += ")";
+  }
+  if (digits.length > 3) out += " " + digits.slice(3, 6);
+  if (digits.length > 6) out += "-" + digits.slice(6, 8);
+  if (digits.length > 8) out += "-" + digits.slice(8, 10);
+  return out + (digits.length === 0 ? " " : "");
+};
+
+const validPhone = (masked) => extractPhoneDigits(masked).length === 10;
+
+// обработчик ввода телефона (без обращения к внешнему ofErrors)
+const ofHandlePhone = (e) => {
+  const digits = extractPhoneDigits(e.target.value);
+  const nextPhone = formatPhonePartial(digits);
+  setOfForm((s) => ({ ...s, phone: nextPhone }));
+  setOfErrors((prev) => {
+    if (validPhone(nextPhone) && prev.phone) {
+      const n = { ...prev };
+      delete n.phone;
+      return n;
+    }
+    return prev;
+  });
+};
+// ──────────────────────────────────────────────────────────────────────────────
+
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+// Удаляет любые пробелы И невидимые форматирующие символы
+const sanitizeEmail = (s) =>
+  (s ?? "")
+    .normalize('NFKC')
+    .replace(/[\s\u00A0\u1680-\u200A\u2028\u2029\u202F\u205F\u3000\u00AD\u200B-\u200F\u061C\u2066-\u2069\uFEFF]+/g, "");
+// удаляет только ведущие пробелы
+const stripLeading = (s) => (s ?? "").replace(/^\s+/,
+ "");
+
+const nameRegex = /^[A-Za-zА-Яа-яЁё]+(?:\s[A-Za-zА-Яа-яЁё]+){0,2}$/; // буквы + до 2 пробелов (3 слова)
+
+const ofHandleName = (e) => {
+  let v = e.target.value || "";
+
+  // оставить только буквы (ru/en) и пробел
+  v = v.replace(/[^A-Za-zА-Яа-яЁё\s]/g, "");
+
+  // убрать ведущие пробелы, чтобы начиналось с буквы
+  v = v.replace(/^\s+/, "");
+
+  // схлопнуть повторяющиеся пробелы
+  v = v.replace(/\s{2,}/g, " ");
+
+  // не больше двух пробелов И сохраняем «висящий» пробел, если он один из двух
+  const spaces = (v.match(/ /g) || []).length;
+  if (spaces > 2) {
+    let keep = 2, out = "";
+    for (const ch of v) {
+      if (ch === " ") {
+        if (keep) { out += ch; keep--; }
+      } else {
+        out += ch;
+      }
+    }
+    v = out;
+  }
+
+  setOfForm((s) => ({ ...s, name: v }));
+
+  // мягко снять ошибку, если текущее значение валидно (без учёта хвостового пробела)
+  setOfErrors((errs) => {
+    const n = { ...errs };
+    if (nameRegex.test(v.trim())) delete n.name;
+    return n;
+  });
+};
+
+const ofHandleChange = (e) => {
+  const { name, value, type, checked } = e.target;
+  let nextValue = type === "checkbox" ? checked : value;
+
+  // ⬇️ запрет пробелов для email
+  if (name === "email") {
+    nextValue = sanitizeEmail(nextValue);
+  }
+  // (как и раньше) убираем ведущие пробелы там, где нужно
+  else if (name === "company" || name === "comment") {
+    nextValue = (nextValue ?? "").replace(/^\s+/, "");
+  }
+
+  setOfForm((s) => ({ ...s, [name]: nextValue }));
+
+  // мягкая очистка ошибок (оставь как было)
+  setOfErrors((errs) => {
+    const n = { ...errs };
+    if (name === "name" && String(nextValue).trim()) delete n.name;
+    if (name === "email") {
+      const v = String(nextValue).trim();
+      if (!v || emailRegex.test(v)) delete n.email;
+    }
+    if (name === "consent" && nextValue === true) delete n.consent;
+    if (name === "company" && String(nextValue).trim()) delete n.company;
+    return n;
+  });
+};
+
+// Срез пробелов у email при потере фокуса (на случай автозаполнения/вставки)
+const ofHandleBlur = (e) => {
+  if (e.target.name === "email") {
+    const v = sanitizeEmail(e.target.value);
+    if (v !== e.target.value) {
+      e.target.value = v;                // мгновенно почистить в UI
+      setOfForm((s) => ({ ...s, email: v }));
+    }
+  }
+};
+
+const ofEmailKeyDown = (e) => {
+  if (e.key === " " || e.code === "Space" || e.key === "Spacebar") {
+    e.preventDefault();
+  }
+};
+
+const ofEmailPaste = (e) => {
+  if (e.target.name !== "email") return;
+  e.preventDefault();
+  const text = (e.clipboardData || window.clipboardData).getData("text") || "";
+  const v = sanitizeEmail(text);
+  setOfForm((s) => ({ ...s, email: v }));
+};
+
+const ofValidate = () => {
+  const next = {};
+  const nameTrim = ofForm.name.trim();
+  if (!nameTrim) next.name = "Введите имя";
+  else if (!nameRegex.test(nameTrim)) next.name = "Только буквы и до двух пробелов";
+  if (!validPhone(ofForm.phone)) next.phone = "Введите номер полностью";
+  const emailTrim = sanitizeEmail(ofForm.email || "");
+  if (emailTrim && !emailRegex.test(emailTrim)) next.email = "Неверный формат email";
+  if (!ofForm.consent) next.consent = "Необходимо согласие";
+  setOfErrors(next);
+  return Object.keys(next).length === 0;
+};
+
+const ofSubmit = (e) => {
+  e.preventDefault();
+  if (!ofValidate()) return;
+  setOfSubmitting(true);
+  // TODO: интеграция (n8n/Telegram/Sheets)
+  setTimeout(() => {
+    setOfSubmitting(false);
+    setOfSubmitted(true); // меняем подпись кнопки
+  }, 500);
+};
+
+// кнопка «Заявка отправлена»: очистить форму и вернуться к началу страницы
+const ofResetAndExit = () => {
+  setOfSubmitted(false);
+  setOfErrors({});
+  setOfForm({ ...initialForm });
+  window.scrollTo({ top: 0, behavior: "smooth" });
+};
+
+// общие классы инпутов (могут не использоваться — ок)
+const inputBase =
+  "w-full rounded-xl border bg-white/90 px-4 py-3 outline-none transition placeholder:text-neutral-400 dark:bg-neutral-900/80";
+const inputOk =
+  "border-neutral-200 focus-visible:ring-2 focus-visible:ring-pink-500/40 dark:border-neutral-800";
+const inputErr =
+  "border-rose-400 ring-2 ring-rose-400/40 focus-visible:ring-rose-500/40";
+
+// ==== END: ORDER FORM BLOCK ====
+
+return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900">
       {/* Header */}
       <header className="bg-black/20 backdrop-blur-md border-b border-white/10 sticky top-0 z-50">
@@ -359,37 +579,224 @@ function App() {
 
           <div className="grid lg:grid-cols-2 gap-12">
             <Card className="bg-white/5 border-white/10 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="text-white text-2xl">Заказать рекламу</CardTitle>
-                <CardDescription className="text-gray-300">
-                  Заполните форму, и мы свяжемся с вами в течение 24 часов
-                </CardDescription>
-              </CardHeader>
+              {!ofSubmitted && (
+                <CardHeader>
+                  <CardTitle className="text-white text-2xl">Заказать рекламу</CardTitle>
+                  <CardDescription className="text-gray-300">
+                    Заполните форму, и мы свяжемся с вами в течение 24 часов
+                  </CardDescription>
+                </CardHeader>
+              )}
               <CardContent className="space-y-4">
-                <Input 
-                  placeholder="Ваше имя" 
-                  className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
-                />
-                <Input 
-                  placeholder="Телефон" 
-                  className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
-                />
-                <Input 
-                  placeholder="Email" 
-                  className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
-                />
-                <Textarea 
-                  placeholder="Расскажите о вашем проекте" 
-                  className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
-                  rows={4}
-                />
-                <Button variant="cta" className="w-full">
-                  Отправить заявку
-                </Button>
-                <p className="text-xs text-gray-400 text-center">
-                  Нажимая кнопку, вы соглашаетесь с обработкой персональных данных
-                </p>
-              </CardContent>
+  {ofSubmitted ? (
+    <div className="space-y-2">
+      <p className="text-gray-300">Спасибо! Мы свяжемся с вами в ближайшее рабочее время.</p>
+      <Button variant="cta" onClick={ofResetAndExit} className="w-full">
+        Заявка отправлена
+      </Button>
+    </div>
+  ) : (
+    <form onSubmit={ofSubmit} noValidate className="space-y-4">
+      {/* Город */}
+      <div className="relative">
+        <select
+          id="city"
+          name="city"
+          value={ofForm.city}
+          onChange={ofHandleChange}
+          className={cn(
+            "w-full rounded-xl bg-white/10 border border-white/20 px-4 py-3 pr-10",
+            "text-sm text-white outline-none transition appearance-none",
+            "focus-visible:ring-2 focus-visible:ring-pink-500/40",
+            !ofForm.city ? "text-gray-400" : "text-white"
+          )}
+          aria-label="Выберите город"
+        >
+          <option value="" disabled hidden>Выберите город</option>
+          {ofCities.map((c) => (
+            <option
+              key={c}
+              value={c}
+              className="bg-slate-900 text-white text-sm"
+            >
+              {c}
+            </option>
+          ))}
+        </select>
+        {/* стрелка справа */}
+        <svg
+          className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-300"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 10.17l3.71-2.94a.75.75 0 1 1 .94 1.17l-4.24 3.36a.75.75 0 0 1-.94 0L5.21 8.4a.75.75 0 0 1 .02-1.19z" />
+        </svg>
+      </div>
+      {/* Имя */}
+      <Input
+        name="name"
+        placeholder="Ваше имя"
+        value={ofForm.name}
+        onChange={ofHandleName}        // ← было ofHandleChange
+        inputMode="text"
+        maxLength={60}
+        aria-invalid={!!ofErrors.name}
+        className={cn(
+          "bg-white/10 border-white/20 text-white placeholder:text-gray-400",
+          ofErrors.name && "border-rose-400 ring-1 ring-rose-400/40"
+        )}
+        autoComplete="name"
+        required
+      />
+      {ofErrors.name && (
+        <p className="text-xs text-rose-400">{ofErrors.name}</p>
+      )}
+
+      {/* Телефон — форматируется по мере ввода */}
+      <Input
+        type="tel"
+        name="phone"
+        inputMode="tel"
+        autoComplete="tel"
+        placeholder="Телефон"
+        value={ofForm.phone}
+        onChange={ofHandlePhone}
+        maxLength={18}
+        aria-invalid={!!ofErrors.phone}
+        className={cn(
+          "bg-white/10 border-white/20 text-white placeholder:text-gray-400",
+          ofErrors.phone && "border-rose-400 ring-1 ring-rose-400/40"
+        )}
+        required
+      />
+      {ofErrors.phone && (
+        <p className="text-xs text-rose-400">{ofErrors.phone}</p>
+      )}
+
+      {/* Email */}
+      <Input
+        type="email"
+        name="email"
+        inputMode="email"
+        autoComplete="email"
+        placeholder="Email"
+        value={sanitizeEmail(ofForm.email)}
+        onChange={ofHandleChange}
+        onBlur={ofHandleBlur}        /* ⬅️ добавляем обработчик blur */
+        onKeyDown={ofEmailKeyDown}
+        onPaste={ofEmailPaste}
+        aria-invalid={!!ofErrors.email}
+        className={cn(
+          "bg-white/10 border-white/20 text-white placeholder:text-gray-400",
+          ofErrors.email && "border-rose-400 ring-1 ring-rose-400/40"
+        )}
+      />
+      {ofErrors.email && (
+        <p className="text-xs text-rose-400">{ofErrors.email}</p>
+      )}
+
+      {/* Название компании */}
+      <Input
+        name="company"
+        placeholder="Название компании"
+        value={ofForm.company}
+        onChange={ofHandleChange}
+        className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+        autoComplete="organization"
+      />
+
+      {/* Есть готовый видеоролик? */}
+      <div className="space-y-2">
+        <p className="text-sm text-gray-300">У вас есть готовый видеоролик?</p>
+        <div className="flex items-center gap-6">
+          <label className="inline-flex items-center gap-2 text-gray-300">
+            <input
+              type="radio"
+              name="hasVideo"
+              value="yes"
+              checked={ofForm.hasVideo === "yes"}
+              onChange={ofHandleChange}
+              className="h-4 w-4"
+            />
+            <span>Да</span>
+          </label>
+          <label className="inline-flex items-center gap-2 text-gray-300">
+            <input
+              type="radio"
+              name="hasVideo"
+              value="no"
+              checked={ofForm.hasVideo === "no"}
+              onChange={ofHandleChange}
+              className="h-4 w-4"
+            />
+            <span>Нет</span>
+          </label>
+        </div>
+      </div>
+
+      {/* Комментарий */}
+      <Textarea
+        name="comment"
+        placeholder="Расскажите о вашем проекте"
+        value={ofForm.comment}
+        onChange={ofHandleChange}
+        className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+        rows={4}
+      />
+
+      {/* Согласие на ПДн (обязательное) */}
+      <label className="flex items-start gap-2">
+        <input
+          type="checkbox"
+          name="consent"
+          checked={ofForm.consent}
+          onChange={ofHandleChange}
+          aria-invalid={!!ofErrors.consent}
+          className="mt-1 h-4 w-4 rounded border-white/30 bg-white/10 focus:ring-0"
+          required
+        />
+        <span className="text-xs text-gray-300">
+          Оставляя заявку, вы соглашаетесь на обработку персональных данных
+        </span>
+      </label>
+      {ofErrors.consent && (
+        <p className="text-xs text-rose-400">{ofErrors.consent}</p>
+      )}
+
+      {/* CTA */}
+      <Button
+        type="submit"
+        variant="cta"
+        disabled={ofSubmitting}
+        className="w-full"
+      >
+        {ofSubmitting ? "Отправляем…" : "Отправить заявку"}
+      </Button>
+
+      {/* Низ формы — инфоблок */}
+      <div className="space-y-1 text-xs text-gray-400 text-center">
+        <p>
+          <a
+            href={PRIVACY_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block rounded-full border border-white/20 bg-white/10 px-3 py-1
+                 text-[11px] text-cyan-300 hover:text-white hover:bg-white/15
+                 underline-offset-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/40
+                 transition"
+          >
+            Политика конфиденциальности
+          </a>
+        </p>
+        <p> Нажимая кнопку "Отправить заявку", вы соглашаетесь с условиями  </p>
+        <p>Заявки обрабатываются в будние дни в рабочее время.</p>
+        <p>График работы: 8:00 — 17:00 МСК</p>
+      </div>
+    </form>
+  )}
+</CardContent>
+
             </Card>
 
             <div className="space-y-8">
@@ -444,7 +851,7 @@ function App() {
                     </div>
                     <div>
                       <p className="text-white font-semibold">География</p>
-                      <p className="text-gray-300">Вся Россия</p>
+                      <p className="text-gray-300">Волгоград</p>
                     </div>
                   </div>
                 </div>
