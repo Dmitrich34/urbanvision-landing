@@ -7,8 +7,12 @@
     "dev": "vite",
     "build": "vite build",
     "build:single": "vite build --mode single",
+    "preview": "vite preview",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "backup": "powershell -NoProfile -ExecutionPolicy Bypass -File ./backup.ps1 -Target all -OutDir C:\\projects",
+    "backup:single": "powershell -NoProfile -ExecutionPolicy Bypass -File ./backup.ps1 -Target single -OutDir C:\\projects",
+    "backup:vscode": "powershell -NoProfile -ExecutionPolicy Bypass -File ./backup.ps1 -Target vscode -OutDir C:\\projects",
+    "backup:github": "powershell -NoProfile -ExecutionPolicy Bypass -File ./backup.ps1 -Target github -OutDir C:\\projects"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",

@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 // Конфиги
-import { TEL_LINK, MAILTO_LINK, TELEGRAM_URL, PHONE, EMAIL, TELEGRAM_HANDLE } from "./config/contacts";
+import { TEL_LINK, MAILTO_LINK, TELEGRAM_URL, PHONE, EMAIL, TELEGRAM_HANDLE } from "./src/config/contacts";
 
 // UI и утилиты
 import { cn, scrollToId } from "@/lib/utils";
-import { Button } from "./components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./components/ui/card";
-import { Input } from "./components/ui/input";
-import { Textarea } from "./components/ui/textarea";
-import { Badge } from "./components/ui/badge";
-import MobileMenu from "./components/ui/MobileMenu";
+import { Button } from "./src/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./src/components/ui/card";
+import { Input } from "./src/components/ui/input";
+import { Textarea } from "./src/components/ui/textarea";
+import { Badge } from "./src/components/ui/badge";
+import MobileMenu from "./src/components/ui/MobileMenu";
 
 // Иконки
 import {
@@ -28,7 +28,6 @@ import {
   BarChart3,
   Zap,
   Send,
-  Star,
 } from "lucide-react";
 import { FaTelegramPlane } from "react-icons/fa";
 
@@ -40,90 +39,6 @@ import videoStand from "./assets/video-stand01.jpg";
 
 // Стили
 import "./App.css";
-
-// ✅ Функция для определения рабочего времени и статуса ответа
-const getResponseTimeData = () => {
-  const now = new Date();
-  const msk = new Date(now.toLocaleString("en-US", {timeZone: "Europe/Moscow"}));
-  const hour = msk.getHours();
-  const day = msk.getDay(); // 0 = воскресенье, 1 = понедельник, ..., 6 = суббота
-  
-  // Выходные (суббота и воскресенье)
-  if (day === 0 || day === 6) {
-    return { 
-      time: "в понедельник", 
-      emoji: "📅", 
-      status: "weekend",
-      statusText: "Выходной",
-      statusColor: "bg-gray-500/20 text-gray-300"
-    };
-  }
-  
-  // Рабочее время (9:00 - 18:00)
-  if (hour >= 9 && hour < 18) {
-    return { 
-      time: "15 мин", 
-      emoji: "⚡", 
-      status: "online",
-      statusText: "Онлайн",
-      statusColor: "bg-green-500/20 text-green-300"
-    };
-  }
-  
-  // Раннее утро (до 9:00)
-  if (hour >= 6 && hour < 9) {
-    return { 
-      time: "через 1-2 часа", 
-      emoji: "🌅", 
-      status: "soon",
-      statusText: "Скоро",
-      statusColor: "bg-yellow-500/20 text-yellow-300"
-    };
-  }
-  
-  // Поздний вечер (18:00 - 22:00)
-  if (hour >= 18 && hour < 22) {
-    return { 
-      time: "завтра утром", 
-      emoji: "🌆", 
-      status: "evening",
-      statusText: "Вечер",
-      statusColor: "bg-orange-500/20 text-orange-300"
-    };
-  }
-  
-  // Ночь (22:00 - 06:00)
-  return { 
-    time: "утром", 
-    emoji: "🌙", 
-    status: "night",
-    statusText: "Ночь",
-    statusColor: "bg-blue-500/20 text-blue-300"
-  };
-};
-
-// ✅ Компонент живого времени ответа
-const LiveResponseTime = () => {
-  const [responseData, setResponseData] = useState(getResponseTimeData());
-  
-  useEffect(() => {
-    // Обновляем каждую минуту
-    const interval = setInterval(() => {
-      setResponseData(getResponseTimeData());
-    }, 60000);
-    
-    return () => clearInterval(interval);
-  }, []);
-  
-  return (
-    <div className="text-center p-4 bg-black/20 rounded-xl border border-cyan-500/20">
-      <div className="text-cyan-400 text-2xl font-bold">
-        {responseData.emoji} {responseData.time}
-      </div>
-      <div className="text-gray-300 text-sm">Среднее время ответа</div>
-    </div>
-  );
-};
 
 // ✅ модалка «Заказать рекламу»
 function App() {
@@ -139,17 +54,6 @@ function App() {
     }
     setCallDialogOpen(true);
   };
-
-  // ✅ Состояние для живого времени ответа
-  const [responseData, setResponseData] = useState(getResponseTimeData());
-  
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setResponseData(getResponseTimeData());
-    }, 60000);
-    
-    return () => clearInterval(interval);
-  }, []);
   
 // ==== BEGIN: ORDER FORM BLOCK (state/logic) ====
 
@@ -674,92 +578,225 @@ return (
           </div>
 
           <div className="grid lg:grid-cols-2 gap-12">
-            <Card className="bg-gradient-to-br from-white/10 to-white/5 border-white/20 backdrop-blur-sm shadow-2xl transition-all duration-300">
+            <Card className="bg-white/5 border-white/10 backdrop-blur-sm">
               {!ofSubmitted && (
-                <CardHeader className="text-center pb-4">
-                  <div className="w-16 h-16 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Zap className="h-8 w-8 text-white" />
-                  </div>
-                  <CardTitle className="text-white text-2xl mb-2">Быстрый старт</CardTitle>
-                  <CardDescription className="text-gray-300 text-lg">
-                    Выберите удобный способ связи для заказа рекламы
+                <CardHeader>
+                  <CardTitle className="text-white text-2xl">Заказать рекламу</CardTitle>
+                  <CardDescription className="text-gray-300">
+                    Заполните форму, и мы свяжемся с вами в течение 24 часов
                   </CardDescription>
                 </CardHeader>
               )}
-              <CardContent className="space-y-6">
-                {/* ✅ Живое время ответа */}
-                <LiveResponseTime />
+              <CardContent className="space-y-4">
+  {ofSubmitted ? (
+    <div className="space-y-2">
+      <p className="text-gray-300">Спасибо! Мы свяжемся с вами в ближайшее рабочее время.</p>
+      <Button variant="cta" onClick={ofResetAndExit} className="w-full">
+        Заявка отправлена
+      </Button>
+    </div>
+  ) : (
+    <form onSubmit={ofSubmit} noValidate className="space-y-4">
+      {/* Город */}
+      <div className="relative">
+        <select
+          id="city"
+          name="city"
+          value={ofForm.city}
+          onChange={ofHandleChange}
+          className={cn(
+            "w-full rounded-xl bg-white/10 border border-white/20 px-4 py-3 pr-10",
+            "text-sm text-white outline-none transition appearance-none",
+            "focus-visible:ring-2 focus-visible:ring-pink-500/40",
+            !ofForm.city ? "text-gray-400" : "text-white"
+          )}
+          aria-label="Выберите город"
+        >
+          <option value="" disabled hidden>Выберите город</option>
+          {ofCities.map((c) => (
+            <option
+              key={c}
+              value={c}
+              className="bg-slate-900 text-white text-sm"
+            >
+              {c}
+            </option>
+          ))}
+        </select>
+        {/* стрелка справа */}
+        <svg
+          className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-300"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 10.17l3.71-2.94a.75.75 0 1 1 .94 1.17l-4.24 3.36a.75.75 0 0 1-.94 0L5.21 8.4a.75.75 0 0 1 .02-1.19z" />
+        </svg>
+      </div>
+      {/* Имя */}
+      <Input
+        name="name"
+        placeholder="Ваше имя"
+        value={ofForm.name}
+        onChange={ofHandleName}        // ← было ofHandleChange
+        inputMode="text"
+        maxLength={60}
+        aria-invalid={!!ofErrors.name}
+        className={cn(
+          "bg-white/10 border-white/20 text-white placeholder:text-gray-400",
+          ofErrors.name && "border-rose-400 ring-1 ring-rose-400/40"
+        )}
+        autoComplete="name"
+        required
+      />
+      {ofErrors.name && (
+        <p className="text-xs text-rose-400">{ofErrors.name}</p>
+      )}
 
-                {/* Улучшенные кнопки с умными статусами */}
-                <div className="space-y-3">
-                  <Button
-                    size="lg"
-                    variant="cta"
-                    className="w-full px-6 py-4 text-lg font-semibold hover:scale-105 transition-transform duration-200 group"
-                    onClick={() => window.open(TELEGRAM_URL, "_blank", "noopener,noreferrer")}
-                  >
-                    <FaTelegramPlane className="mr-3 h-5 w-5 group-hover:rotate-12 transition-transform duration-200" />
-                    Написать в Telegram
-                    <span className={`ml-auto text-xs px-2 py-1 rounded-full ${responseData.statusColor}`}>
-                      {responseData.statusText}
-                    </span>
-                  </Button>
+      {/* Телефон — форматируется по мере ввода */}
+      <Input
+        type="tel"
+        name="phone"
+        inputMode="tel"
+        autoComplete="tel"
+        placeholder="Телефон"
+        value={ofForm.phone}
+        onChange={ofHandlePhone}
+        maxLength={18}
+        aria-invalid={!!ofErrors.phone}
+        className={cn(
+          "bg-white/10 border-white/20 text-white placeholder:text-gray-400",
+          ofErrors.phone && "border-rose-400 ring-1 ring-rose-400/40"
+        )}
+        required
+      />
+      {ofErrors.phone && (
+        <p className="text-xs text-rose-400">{ofErrors.phone}</p>
+      )}
 
-                  <Button
-                    size="lg"
-                    variant="cta"
-                    className="w-full px-6 py-4 text-lg font-semibold hover:scale-105 transition-transform duration-200 group"
-                    onClick={() => (window.location.href = TEL_LINK)}
-                  >
-                    <Phone className="mr-3 h-5 w-5 group-hover:shake transition-transform duration-200" />
-                    Позвонить сейчас
-                    <span className="ml-auto text-xs bg-cyan-500/20 px-2 py-1 rounded-full text-cyan-300">9:00-18:00</span>
-                  </Button>
-                </div>
+      {/* Email */}
+      <Input
+        type="email"
+        name="email"
+        inputMode="email"
+        autoComplete="email"
+        placeholder="Email"
+        value={sanitizeEmail(ofForm.email)}
+        onChange={ofHandleChange}
+        onBlur={ofHandleBlur}        /* ⬅️ добавляем обработчик blur */
+        onKeyDown={ofEmailKeyDown}
+        onPaste={ofEmailPaste}
+        aria-invalid={!!ofErrors.email}
+        className={cn(
+          "bg-white/10 border-white/20 text-white placeholder:text-gray-400",
+          ofErrors.email && "border-rose-400 ring-1 ring-rose-400/40"
+        )}
+      />
+      {ofErrors.email && (
+        <p className="text-xs text-rose-400">{ofErrors.email}</p>
+      )}
 
-                {/* Блок с социальными доказательствами */}
-                <div className="bg-gradient-to-r from-cyan-500/10 to-purple-500/10 rounded-xl p-4 border border-cyan-500/20">
-                  <div className="flex items-center justify-between text-sm">
-                    <div className="text-center">
-                      <div className="text-cyan-400 font-bold text-lg">50+</div>
-                      <div className="text-gray-400 text-xs">Клиентов</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-purple-400 font-bold text-lg flex items-center justify-center">
-                        4.9<Star className="h-3 w-3 ml-1 fill-current" />
-                      </div>
-                      <div className="text-gray-400 text-xs">Рейтинг</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-green-400 font-bold text-lg">24ч</div>
-                      <div className="text-gray-400 text-xs">Ответ</div>
-                    </div>
-                  </div>
-                </div>
+      {/* Название компании */}
+      <Input
+        name="company"
+        placeholder="Название компании"
+        value={ofForm.company}
+        onChange={ofHandleChange}
+        className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+        autoComplete="organization"
+      />
 
-                {/* Политика + дисклеймеры */}
-                <div className="space-y-4 text-center">
-                  <a
-                    href="/privacy.pdf"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-block text-cyan-300 hover:text-white underline decoration-cyan-400/40 underline-offset-4 hover:decoration-cyan-300 transition-colors"
-                  >
-                    Политика конфиденциальности
-                  </a>
+      {/* Есть готовый видеоролик? */}
+      <div className="space-y-2">
+        <p className="text-sm text-gray-300">У вас есть готовый видеоролик?</p>
+        <div className="flex items-center gap-6">
+          <label className="inline-flex items-center gap-2 text-gray-300">
+            <input
+              type="radio"
+              name="hasVideo"
+              value="yes"
+              checked={ofForm.hasVideo === "yes"}
+              onChange={ofHandleChange}
+              className="h-4 w-4"
+            />
+            <span>Да</span>
+          </label>
+          <label className="inline-flex items-center gap-2 text-gray-300">
+            <input
+              type="radio"
+              name="hasVideo"
+              value="no"
+              checked={ofForm.hasVideo === "no"}
+              onChange={ofHandleChange}
+              className="h-4 w-4"
+            />
+            <span>Нет</span>
+          </label>
+        </div>
+      </div>
 
-                  {/* ✅ Согласие на обработку ПД - отдельно под политикой */}
-                  <div className="text-xs text-gray-400">
-                    <p>Оставляя заявку, вы соглашаетесь на обработку ваших персональных данных</p>
-                  </div>
+      {/* Комментарий */}
+      <Textarea
+        name="comment"
+        placeholder="Расскажите о вашем проекте"
+        value={ofForm.comment}
+        onChange={ofHandleChange}
+        className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
+        rows={4}
+      />
 
-                  {/* ✅ График работы - отдельным блоком */}
-                  <div className="space-y-2 text-sm text-gray-300 pt-4">
-                    <p>Заявки обрабатываются в будние дни в рабочее время.</p>
-                    <p className="font-medium">График работы: 9:00 — 18:00 МСК</p>
-                  </div>
-                </div>
-              </CardContent>
+      {/* Согласие на ПДн (обязательное) */}
+      <label className="flex items-start gap-2">
+        <input
+          type="checkbox"
+          name="consent"
+          checked={ofForm.consent}
+          onChange={ofHandleChange}
+          aria-invalid={!!ofErrors.consent}
+          className="mt-1 h-4 w-4 rounded border-white/30 bg-white/10 focus:ring-0"
+          required
+        />
+        <span className="text-xs text-gray-300">
+          Оставляя заявку, вы соглашаетесь на обработку персональных данных
+        </span>
+      </label>
+      {ofErrors.consent && (
+        <p className="text-xs text-rose-400">{ofErrors.consent}</p>
+      )}
+
+      {/* CTA */}
+      <Button
+        type="submit"
+        variant="cta"
+        disabled={ofSubmitting}
+        className="w-full"
+      >
+        {ofSubmitting ? "Отправляем…" : "Отправить заявку"}
+      </Button>
+
+      {/* Низ формы — инфоблок */}
+      <div className="space-y-1 text-xs text-gray-400 text-center">
+        <p>
+          <a
+            href={PRIVACY_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block rounded-full border border-white/20 bg-white/10 px-3 py-1
+                 text-[11px] text-cyan-300 hover:text-white hover:bg-white/15
+                 underline-offset-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/40
+                 transition"
+          >
+            Политика конфиденциальности
+          </a>
+        </p>
+        <p> Нажимая кнопку "Отправить заявку", вы соглашаетесь с условиями  </p>
+        <p>Заявки обрабатываются в будние дни в рабочее время.</p>
+        <p>График работы: 8:00 — 17:00 МСК</p>
+      </div>
+    </form>
+  )}
+</CardContent>
+
             </Card>
 
             <div className="space-y-8">

@@ -7,6 +7,6 @@
     "target": "es2020",
     "types": ["vite/client"]        // подхватывает типы Vite Env
   },
-  "include": ["src", "vite.config.js"],
+  "include": ["src", "vite.config.js", "App.jsx.original"],
   "exclude": ["node_modules", "dist"]
 }
