@@ -47,55 +47,44 @@ const getResponseTimeData = () => {
   const msk = new Date(now.toLocaleString("en-US", {timeZone: "Europe/Moscow"}));
   const hour = msk.getHours();
   const day = msk.getDay(); // 0 = воскресенье, 1 = понедельник, ..., 6 = суббота
-  
+
   // Выходные (суббота и воскресенье)
   if (day === 0 || day === 6) {
-    return { 
-      time: "в понедельник", 
-      emoji: "📅", 
+    return {
+      time: "Ответим в понедельник",
+      emoji: "📅",
       status: "weekend",
       statusText: "Выходной",
       statusColor: "bg-gray-500/20 text-gray-300"
     };
   }
-  
+
   // Рабочее время (9:00 - 18:00)
   if (hour >= 9 && hour < 18) {
-    return { 
-      time: "15 мин", 
-      emoji: "⚡", 
+    return {
+      time: "2 часа",
+      emoji: "⏱️",
       status: "online",
       statusText: "Онлайн",
       statusColor: "bg-green-500/20 text-green-300"
     };
   }
-  
-  // Раннее утро (до 9:00)
-  if (hour >= 6 && hour < 9) {
-    return { 
-      time: "через 1-2 часа", 
-      emoji: "🌅", 
+
+  // Близко к рабочему времени (6:00 - 9:00 и 18:00 - 22:00)
+  if ((hour >= 6 && hour < 9) || (hour >= 18 && hour < 22)) {
+    return {
+      time: "Ответим через 3-5 часов",
+      emoji: "🕒",
       status: "soon",
       statusText: "Скоро",
       statusColor: "bg-yellow-500/20 text-yellow-300"
     };
   }
-  
-  // Поздний вечер (18:00 - 22:00)
-  if (hour >= 18 && hour < 22) {
-    return { 
-      time: "завтра утром", 
-      emoji: "🌆", 
-      status: "evening",
-      statusText: "Вечер",
-      statusColor: "bg-orange-500/20 text-orange-300"
-    };
-  }
-  
-  // Ночь (22:00 - 06:00)
-  return { 
-    time: "утром", 
-    emoji: "🌙", 
+
+  // Поздний вечер/ночь (22:00 - 6:00)
+  return {
+    time: "Ответим завтра утром",
+    emoji: "🌙",
     status: "night",
     statusText: "Ночь",
     statusColor: "bg-blue-500/20 text-blue-300"
