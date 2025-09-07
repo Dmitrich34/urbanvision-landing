@@ -377,7 +377,15 @@ return (
       <header className="bg-black/20 backdrop-blur-md border-b border-white/10 sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <img src={urbanvisionLogo} alt="UrbanVision" className="w-20 h-20 rounded-lg" />
+            {/* Старый вариант для квадратного лого */}
+            {/* <img src={urbanvisionLogo} alt="UrbanVision" className="w-20 h-20 rounded-lg" /> */}
+
+            {/* Новый вариант для прямоугольного лого */}
+              <img
+                src={urbanvisionLogo}
+                alt="UrbanVision"
+                className="h-10 md:h-12 w-auto max-w-[156px] rounded-none object-contain"
+              />
             <div>
               <h1 className="text-2xl font-bold text-white">UrbanVision</h1>
               <p className="text-cyan-300 text-sm">Ваш бизнес в центре внимания</p>
@@ -756,7 +764,15 @@ return (
     <div className="grid md:grid-cols-3 gap-8">
       <div>
         <div className="flex items-center space-x-3 mb-4">
-          <img src={urbanvisionLogo} alt="UrbanVision" className="w-18 h-18 rounded-lg" />
+          {/* Старый вариант для квадратного лого */}
+          {/* <img src={urbanvisionLogo} alt="UrbanVision" className="w-18 h-18 rounded-lg" /> */}
+
+          {/* Новый вариант для прямоугольного лого */}
+          <img
+            src={urbanvisionLogo}
+            alt="UrbanVision"
+            className="h-8 md:h-9 w-auto max-w-[140px] rounded-none object-contain"
+          />
           <div>
             <h3 className="text-xl font-bold text-white">UrbanVision</h3>
             <p className="text-cyan-300 text-sm">Ваш бизнес в центре внимания</p>
