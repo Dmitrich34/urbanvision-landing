@@ -719,26 +719,31 @@ return (
       </Button>
     </div>
 
-    {/* Политика и график — улучшенная типографика */}
-    <div className="space-y-4 text-center">
-      <a
-        href="/privacy.pdf"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-base md:text-lg font-medium text-cyan-300 hover:text-white underline decoration-cyan-400/40 underline-offset-4 transition-colors"
-      >
-        Политика конфиденциальности
-      </a>
+    {/* Политика и график — компактная типографика */}
+<div className="text-center">
+  <a
+    href="/privacy.pdf"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="text-[11px] md:text-xs font-medium text-cyan-300 hover:text-white underline decoration-cyan-400/40 underline-offset-4 transition-colors"
+  >
+    Политика конфиденциальности
+  </a>
 
-      {/* тонкий разделитель, чтобы текст не сливался */}
-      <div className="mx-auto h-px w-24 bg-white/10"></div>
+  {/* Минимальный зазор именно между ссылкой и согласием */}
+  <p className="mt-1 text-[11px] md:text-xs text-white/70">
+    Оставляя заявку, вы соглашаетесь на обработку ваших персональных данных
+  </p>
 
-      <div className="space-y-2 text-sm md:text-base leading-relaxed text-white/80 max-w-2xl mx-auto">
-        <p>Оставляя заявку, вы соглашаетесь на обработку ваших персональных данных</p>
-        <p>Заявки обрабатываются в будние дни в рабочее время.</p>
-        <p className="font-medium text-white/90">График работы: 9:00 — 18:00 МСК</p>
-      </div>
-    </div>
+  {/* Далее — обычные отступы и читаемые размеры */}
+  <p className="mt-3 text-xs md:text-sm text-white/80">
+    Заявки обрабатываются в будние дни в рабочее время.
+  </p>
+  <p className="text-sm md:text-base font-medium text-white/90">
+    График работы: 9:00 — 18:00 МСК
+  </p>
+</div>
+
   </CardContent>
 </Card>
     </div>
