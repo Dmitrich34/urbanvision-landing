@@ -119,6 +119,27 @@ function App() {
   // ↑ комментарий оставлен без изменений
   const handleOrderClick = () => scrollToId("order-form", 96); // точный скролл на мобиле
 
+  // ⬇️ добавляем хелперы для плавного скролла пунктов хедера
+  // Прокрутка к первому существующему id из списка (учёт шапки)
+  const scrollToCandidates = (ids, offset = 96) => {
+    for (const id of ids) {
+      if (document.getElementById(id)) {
+        scrollToId(id, offset);
+        return true;
+      }
+    }
+    return false;
+  };
+
+  // Обработчик для пунктов хедера (предотвращаем "рывок" якоря)
+  const handleNav = (ids) => (e) => {
+    e.preventDefault();
+    if (!scrollToCandidates(ids, 96)) {
+      // fallback на первый id
+      scrollToId(ids[0], 96);
+    }
+  };
+
   // состояние модалки звонка
   // логика кнопки «Заказать рекламу»: мобила -> tel:, десктоп -> модалка
   const handleCallClick = () => {
@@ -365,9 +386,9 @@ return (
 
           {/* Десктоп-меню */}
           <div className="hidden md:flex items-center space-x-6">
-            <a href="#services" className="text-white hover:text-cyan-300 transition-colors">Услуги</a>
-            <a href="#about" className="text-white hover:text-cyan-300 transition-colors">О нас</a>
-            <a href="#contact" className="text-white hover:text-cyan-300 transition-colors">Контакты</a>
+            <a href="#services" onClick={handleNav(['services'])} className="text-white hover:text-cyan-300 transition-colors">Услуги</a>
+            <a href="#about" onClick={handleNav(['about'])} className="text-white hover:text-cyan-300 transition-colors">О нас</a>
+            <a href="#contacts-footer" onClick={handleNav(['contacts-footer', 'contacts', 'contact-info', 'contact'])} className="text-white hover:text-cyan-300 transition-colors">Контакты</a>
             {/* CTA: скроллим к форме */}
             <Button variant="cta" onClick={handleOrderClick}>
               ЗАКАЗАТЬ РЕКЛАМУ
@@ -506,7 +527,7 @@ return (
               </CardHeader>
               <CardContent>
                 <p className="text-gray-300 text-center">
-                  Фото-отчеты по каждому размещению
+                  Фото-отчеты по каждому размещению и аналитика показов
                 </p>
               </CardContent>
             </Card>
@@ -643,7 +664,7 @@ return (
               </div>
               <h3 className="text-xl font-bold text-white mb-3">Отчетность</h3>
               <p className="text-gray-300">
-                Получаете полный фото-отчет
+                Получаете полный фото-отчет и аналитику показаов
               </p>
             </div>
           </div>
@@ -651,265 +672,154 @@ return (
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-20 scroll-mt-24 md:scroll-mt-28">
-        {/* оставляем вспомогательный якорь для CTA (если где-то ещё используется) */}
-        <div id="order-form" className="sr-only" />
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-white mb-4">Начните продвижение уже сегодня</h2>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Свяжитесь с нами для бесплатной консультации и расчета стоимости
-            </p>
-          </div>
+<section id="contact" className="py-20 scroll-mt-24 md:scroll-mt-28">
+  {/* оставляем вспомогательный якорь для CTA */}
+  <div id="order-form" className="sr-only" />
+  <div className="container mx-auto px-4">
+    {/* Сохраняем текущий заголовок секции */}
+    <div className="text-center mb-16">
+      <h2 className="text-4xl font-bold text-white mb-4">Начните продвижение уже сегодня</h2>
+      <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+        Свяжитесь с нами для бесплатной консультации и расчета стоимости
+      </p>
+    </div>
 
-          <div className="grid lg:grid-cols-2 gap-12">
-            <Card className="bg-gradient-to-br from-white/10 to-white/5 border-white/20 backdrop-blur-sm shadow-2xl transition-all duration-300">
-              {!ofSubmitted && (
-                <CardHeader className="text-center pb-4">
-                  <div className="w-16 h-16 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Zap className="h-8 w-8 text-white" />
-                  </div>
-                  <CardTitle className="text-white text-2xl mb-2">Быстрый старт</CardTitle>
-                  <CardDescription className="text-gray-300 text-lg">
-                    Выберите удобный способ связи для заказа рекламы
-                  </CardDescription>
-                </CardHeader>
-              )}
-              <CardContent className="space-y-6">
-                {/* ✅ Живое время ответа */}
-                <LiveResponseTime />
+    {/* === Новый единый блок "Заказать рекламу" === */}
+    <div className="max-w-3xl mx-auto">
+      <Card className="bg-gradient-to-br from-white/10 to-white/5 border-white/20 backdrop-blur-sm shadow-2xl transition-all duration-300">
+  <CardHeader className="text-center pb-4">
+    <CardTitle className="text-white text-2xl">Заказать рекламу</CardTitle>
+    <CardDescription className="text-gray-300 text-lg">
+      Выберите удобный способ связи для заказа рекламы
+    </CardDescription>
+  </CardHeader>
 
-                {/* Улучшенные кнопки с умными статусами */}
-                <div className="space-y-3">
-                  <Button
-                    size="lg"
-                    variant="cta"
-                    className="w-full px-6 py-4 text-lg font-semibold hover:scale-105 transition-transform duration-200 group"
-                    onClick={() => window.open(TELEGRAM_URL, "_blank", "noopener,noreferrer")}
-                  >
-                    <FaTelegramPlane className="mr-3 h-5 w-5 group-hover:rotate-12 transition-transform duration-200" />
-                    Написать в Telegram
-                    <span className={`ml-auto text-xs px-2 py-1 rounded-full ${responseData.statusColor}`}>
-                      {responseData.statusText}
-                    </span>
-                  </Button>
+  <CardContent className="space-y-6">
+    {/* Градиентные кнопки связи (с иконками) */}
+    <div className="grid gap-3 md:grid-cols-3">
+      <Button asChild size="lg" variant="cta" className="w-full justify-center">
+        <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer">
+          <FaTelegramPlane className="mr-2 h-5 w-5" aria-hidden="true" />
+          Написать в Telegram
+        </a>
+      </Button>
 
-                  <Button
-                    size="lg"
-                    variant="cta"
-                    className="w-full px-6 py-4 text-lg font-semibold hover:scale-105 transition-transform duration-200 group"
-                    onClick={() => (window.location.href = TEL_LINK)}
-                  >
-                    <Phone className="mr-3 h-5 w-5 group-hover:shake transition-transform duration-200" />
-                    Позвонить сейчас
-                    <span className="ml-auto text-xs bg-cyan-500/20 px-2 py-1 rounded-full text-cyan-300">9:00-18:00</span>
-                  </Button>
-                </div>
+      <Button asChild size="lg" variant="cta" className="w-full justify-center">
+        <a href={MAILTO_LINK}>
+          <Mail className="mr-2 h-5 w-5" aria-hidden="true" />
+          Написать на E-Mail
+        </a>
+      </Button>
 
-                {/* Блок с социальными доказательствами */}
-                <div className="bg-gradient-to-r from-cyan-500/10 to-purple-500/10 rounded-xl p-4 border border-cyan-500/20">
-                  <div className="flex items-center justify-between text-sm">
-                    <div className="text-center">
-                      <div className="text-cyan-400 font-bold text-lg">50+</div>
-                      <div className="text-gray-400 text-xs">Клиентов</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-purple-400 font-bold text-lg flex items-center justify-center">
-                        4.9<Star className="h-3 w-3 ml-1 fill-current" />
-                      </div>
-                      <div className="text-gray-400 text-xs">Рейтинг</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-green-400 font-bold text-lg">24ч</div>
-                      <div className="text-gray-400 text-xs">Ответ</div>
-                    </div>
-                  </div>
-                </div>
+      <Button asChild size="lg" variant="cta" className="w-full justify-center">
+        <a href={TEL_LINK}>
+          <Phone className="mr-2 h-5 w-5" aria-hidden="true" />
+          Позвонить по телефону
+        </a>
+      </Button>
+    </div>
 
-                {/* Политика + дисклеймеры */}
-                <div className="space-y-4 text-center">
-                  <a
-                    href="/privacy.pdf"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-block text-cyan-300 hover:text-white underline decoration-cyan-400/40 underline-offset-4 hover:decoration-cyan-300 transition-colors"
-                  >
-                    Политика конфиденциальности
-                  </a>
+    {/* Политика и график — улучшенная типографика */}
+    <div className="space-y-4 text-center">
+      <a
+        href="/privacy.pdf"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-base md:text-lg font-medium text-cyan-300 hover:text-white underline decoration-cyan-400/40 underline-offset-4 transition-colors"
+      >
+        Политика конфиденциальности
+      </a>
 
-                  {/* ✅ Согласие на обработку ПД - отдельно под политикой */}
-                  <div className="text-xs text-gray-400">
-                    <p>Оставляя заявку, вы соглашаетесь на обработку ваших персональных данных</p>
-                  </div>
+      {/* тонкий разделитель, чтобы текст не сливался */}
+      <div className="mx-auto h-px w-24 bg-white/10"></div>
 
-                  {/* ✅ График работы - отдельным блоком */}
-                  <div className="space-y-2 text-sm text-gray-300 pt-4">
-                    <p>Заявки обрабатываются в будние дни в рабочее время.</p>
-                    <p className="font-medium">График работы: 9:00 — 18:00 МСК</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <div className="space-y-8">
-              <div>
-                <h3
-                  id="contact-info"
-                  className="text-2xl font-bold text-white mb-6 scroll-mt-24 md:scroll-mt-28"
-                >
-                  Контактная информация
-                </h3>
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full flex items-center justify-center">
-                      <FaTelegramPlane className="h-6 w-6 text-white" />
-                    </div>
-                    <div>
-                      <p className="text-white font-semibold">Telegram</p>
-                      <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer"
-                        className="text-gray-300 hover:text-white transition-colors">
-                        @{TELEGRAM_HANDLE}
-                      </a>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full flex items-center justify-center">
-                      <Phone className="h-6 w-6 text-white" />
-                    </div>
-                    <div>
-                      <p className="text-white font-semibold">Телефон</p>
-                      <a href={TEL_LINK} className="text-gray-300 hover:text-white transition-colors">
-                        {PHONE}
-                      </a>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full flex items-center justify-center">
-                      <Mail className="h-6 w-6 text-white" />
-                    </div>
-                    <div>
-                      <p className="text-white font-semibold">Email</p>
-                      <a href={MAILTO_LINK} className="text-gray-300 hover:text-white transition-colors">
-                        {EMAIL}
-                      </a>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full flex items-center justify-center">
-                      <MapPin className="h-6 w-6 text-white" />
-                    </div>
-                    <div>
-                      <p className="text-white font-semibold">География</p>
-                      <p className="text-gray-300">Волгоград</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-white/5 border border-white/10 rounded-lg p-6 backdrop-blur-sm">
-                <h4 className="text-xl font-bold text-white mb-4">Преимущества работы с нами</h4>
-                <ul className="space-y-3">
-                  <li className="flex items-center text-gray-300">
-                    <CheckCircle className="h-5 w-5 text-green-400 mr-3" />
-                    Бесплатная консультация
-                  </li>
-                  <li className="flex items-center text-gray-300">
-                    <CheckCircle className="h-5 w-5 text-green-400 mr-3" />
-                    Расчет стоимости за 1 час
-                  </li>
-                  <li className="flex items-center text-gray-300">
-                    <CheckCircle className="h-5 w-5 text-green-400 mr-3" />
-                    Запуск кампании за 3 дня
-                  </li>
-                  <li className="flex items-center text-gray-300">
-                    <CheckCircle className="h-5 w-5 text-green-400 mr-3" />
-                    100% фото-отчет
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <div className="space-y-2 text-sm md:text-base leading-relaxed text-white/80 max-w-2xl mx-auto">
+        <p>Оставляя заявку, вы соглашаетесь на обработку ваших персональных данных</p>
+        <p>Заявки обрабатываются в будние дни в рабочее время.</p>
+        <p className="font-medium text-white/90">График работы: 9:00 — 18:00 МСК</p>
+      </div>
+    </div>
+  </CardContent>
+</Card>
+    </div>
+  </div>
+</section>
 
       {/* Footer */}
-      <footer className="bg-black/40 backdrop-blur-sm border-t border-white/10 py-12">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-3 gap-8">
-            <div>
-              <div className="flex items-center space-x-3 mb-4">
-                <img src={urbanvisionLogo} alt="UrbanVision" className="w-18 h-18 rounded-lg" />
-                <div>
-                  <h3 className="text-xl font-bold text-white">UrbanVision</h3>
-                  <p className="text-cyan-300 text-sm">Ваш бизнес в центре внимания</p>
-                </div>
-              </div>
-              <p className="text-gray-300 text-sm">
-                Эффективная indoor-реклама на видеостойках в самых проходимых местах города.
-              </p>
-            </div>
-          
-            <div>
-              <h4 className="text-white font-semibold mb-4">Услуги</h4>
-              <ul className="space-y-2 text-gray-300 text-sm">
-                <li>Размещение на видеостойках</li>
-                <li>Создание видеороликов</li>
-                <li>Аналитика и отчетность</li>
-                <li>Консультации по рекламе</li>
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="text-white font-semibold mb-4">Контакты</h4>
-              <div className="space-y-2 text-gray-300 text-sm">
-                <p>
-                  Telegram:{" "}
-                  <a
-                    href={TELEGRAM_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-white transition-colors"
-                  >
-                    @{TELEGRAM_HANDLE}
-                  </a>
-                </p>
-                <p>
-                  Телефон:{" "}
-                  <a href={TEL_LINK} className="hover:text-white transition-colors">
-                    {PHONE}
-                  </a>
-                </p>
-                <p>
-                  Email:{" "}
-                  <a href={MAILTO_LINK} className="hover:text-white transition-colors">
-                    {EMAIL}
-                  </a>
-                </p>
-                <p>
-                  Сайт:{" "}
-                  <a
-                    href="https://urban-vision.ru"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-white transition-colors"
-                  >
-                    urban-vision.ru
-                  </a>
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="border-t border-white/10 mt-8 pt-8 text-center">
-            <p className="text-gray-400 text-sm">
-              © 2025 UrbanVision. Все права защищены.
-            </p>
+<footer id="contacts-footer" className="bg-black/40 backdrop-blur-sm border-t border-white/10 py-12 scroll-mt-28 md:scroll-mt-32">
+  <div className="container mx-auto px-4">
+    <div className="grid md:grid-cols-3 gap-8">
+      <div>
+        <div className="flex items-center space-x-3 mb-4">
+          <img src={urbanvisionLogo} alt="UrbanVision" className="w-18 h-18 rounded-lg" />
+          <div>
+            <h3 className="text-xl font-bold text-white">UrbanVision</h3>
+            <p className="text-cyan-300 text-sm">Ваш бизнес в центре внимания</p>
           </div>
         </div>
-      </footer>
+        <p className="text-gray-300 text-sm">
+          Эффективная indoor-реклама на видеостойках в самых проходимых местах города.
+        </p>
+      </div>
+    
+      <div>
+        <h4 className="text-white font-semibold mb-4">Услуги</h4>
+        <ul className="space-y-2 text-gray-300 text-sm">
+          <li>Размещение на видеостойках</li>
+          <li>Создание видеороликов</li>
+          <li>Аналитика и отчетность</li>
+          <li>Консультации по рекламе</li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 className="text-white font-semibold mb-4">Контакты</h4>
+        <div className="space-y-2 text-gray-300 text-sm">
+          <p>
+            Telegram:{" "}
+            <a
+              href={TELEGRAM_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-white transition-colors"
+            >
+              @{TELEGRAM_HANDLE}
+            </a>
+          </p>
+          <p>
+            Телефон:{" "}
+            <a href={TEL_LINK} className="hover:text-white transition-colors">
+              {PHONE}
+            </a>
+          </p>
+          <p>
+            Email:{" "}
+            <a href={MAILTO_LINK} className="hover:text-white transition-colors">
+              {EMAIL}
+            </a>
+          </p>
+          <p>
+            Сайт:{" "}
+            <a
+              href="https://urban-vision.ru"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-white transition-colors"
+            >
+              urban-vision.ru
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div className="border-t border-white/10 mt-8 pt-8 text-center">
+      <p className="text-gray-400 text-sm">
+        © 2025 UrbanVision. Все права защищены.
+      </p>
+    </div>
+  </div>
+</footer>
 
     </div>
   );

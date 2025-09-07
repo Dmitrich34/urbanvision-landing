@@ -7,7 +7,8 @@ export function cn(...inputs) {
 }
 
 /**
- * Плавный скролл к элементу по id с учётом фиксированной шапки
+ * Плавный скролл к элементу по id с учётом фиксированной шапки.
+ * Уважает системную настройку "prefers-reduced-motion": при включенном режиме скролл — без анимации.
  * @param {string} id
  * @param {number} offset - базовый отступ (по умолчанию 80)
  */
@@ -25,5 +26,9 @@ export function scrollToId(id, offset = 80) {
   const extra = isMobile ? 16 : 0
 
   const top = el.getBoundingClientRect().top + window.scrollY - Math.max(offset, headerH + extra)
-  window.scrollTo({ top, behavior: "smooth" })
+
+  // Если у пользователя включено "уменьшить анимацию" — используем мгновенную прокрутку
+  const prefersReduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+
+  window.scrollTo({ top, behavior: prefersReduced ? 'auto' : 'smooth' })
 }

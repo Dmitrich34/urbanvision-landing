@@ -22,23 +22,46 @@ export default function MobileMenu({ onCallClick }) {
 
   const close = () => setOpen(false)
 
+  // Пробуем проскроллить к первому существующему id из списка
+  const scrollToCandidates = (ids, offset = 96) => {
+    for (const id of ids) {
+      const el = document.getElementById(id)
+      if (el) {
+        scrollToId(id, offset)
+        return true
+      }
+    }
+    return false
+  }
+
   const NavLink = ({ href, children }) => {
     const handleClick = (e) => {
       if (href && href.startsWith("#")) {
         e.preventDefault()
         close()
         const id = href.slice(1)              // ← фикс: берём id из href
-        setTimeout(() => scrollToId(id, 96), 0) // учёт фикс-шапки на мобиле
+
+        // Если это «Контакты» — ведём в самый низ (футер/нижний блок контактов)
+        const contactsIds = ["contacts-footer", "contacts", "contact-info", "contact"]
+        const isContacts = contactsIds.includes(id)
+
+        setTimeout(() => {
+          if (isContacts) {
+            scrollToCandidates(contactsIds, 96) // учёт фикс-шапки на мобиле
+          } else {
+            scrollToId(id, 96) // учёт фикс-шапки на мобиле
+          }
+        }, 0)
       } else {
         close()
       }
-    }  
+    }
     return (
       <a
         href={href}
         className="block rounded-lg px-3 py-3 text-base hover:bg-white/10"
         onClick={handleClick}
-      >        
+      >
         {children}
       </a>
     )
@@ -96,18 +119,11 @@ export default function MobileMenu({ onCallClick }) {
               <ul className="space-y-1">
                 <li><NavLink href="#about">О нас</NavLink></li>
                 <li><NavLink href="#services">Услуги</NavLink></li>
-                <li><NavLink href="#contact-info">Контакты</NavLink></li>
+                {/* Контакты → самый низ лендинга (футер/нижний блок) */}
+                <li><NavLink href="#contacts-footer">Контакты</NavLink></li>
               </ul>
 
-              {/* Блок с телефоном (подставь номер) */}
-              <div className="mt-6 rounded-xl border border-white/10 p-4 bg-white/5">
-                <div className="text-xs uppercase tracking-wide opacity-70 mb-1">
-                  Отдел продаж
-                </div>
-                <a href="tel:+7XXXXXXXXXX" className="text-lg font-medium">
-                  +7 XXX XXX-XX-XX
-                </a>
-              </div>
+              {/* (удалено) Блок «Отдел продаж» с номером телефона */}
 
               {/* CTA */}
               <Button
@@ -116,7 +132,7 @@ export default function MobileMenu({ onCallClick }) {
                 onClick={(e) => {
                   e.preventDefault()
                   close()
-                  setTimeout(() => scrollToId("order-form", 80), 0)
+                  setTimeout(() => scrollToId("order-form", 96), 0)
                 }}
               >
                 ЗАКАЗАТЬ РЕКЛАМУ
