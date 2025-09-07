@@ -387,7 +387,8 @@ return (
                 className="h-10 md:h-12 w-auto max-w-[156px] rounded-none object-contain"
               />
             <div>
-              <h1 className="text-2xl font-bold text-white">UrbanVision</h1>
+              {/* Убираем белый текст UrbanVision справа от логотипа */}
+              {/*<h1 className="text-2xl font-bold text-white">UrbanVision</h1> */}
               <p className="text-cyan-300 text-sm">Ваш бизнес в центре внимания</p>
             </div>
           </div>
@@ -774,7 +775,8 @@ return (
             className="h-8 md:h-9 w-auto max-w-[140px] rounded-none object-contain"
           />
           <div>
-            <h3 className="text-xl font-bold text-white">UrbanVision</h3>
+            {/* Убираем белый текст UrbanVision справа от логотипа */}
+            {/* h3 className="text-xl font-bold text-white">UrbanVision</h3> */}
             <p className="text-cyan-300 text-sm">Ваш бизнес в центре внимания</p>
           </div>
         </div>
